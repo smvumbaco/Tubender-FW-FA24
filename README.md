@@ -6,8 +6,7 @@
 .
 |
 |───production  # contains files needed for final prototype
-|   |
-|   |───eCAD    # contains the KiCAD project
+|
 |   └───src     # contains the code needed for deployment
 |
 |───testing     # contains files relevant to testing components
@@ -16,7 +15,6 @@
 ```
 
 ## Preferred Tools
-- KiCAD for PCB development
 - Visual Studio Code / PlatformIO for code development
 - Git CLI / GitHub Desktop for managing Git
 
