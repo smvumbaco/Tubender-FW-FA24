@@ -2,32 +2,44 @@
 
 using namespace std;
 
-Config::Config(double initTubeLength) {
-    //TODO should config be a big object for all possible bends?
-    // or should there be a config for each bend?
-    
+Config::Config(double initTubeLength) 
+{
+    tubeLength = initTubeLength;
 }
 
-void Config::addNewBend(string newBendType, int bendNum, double newBendAngle, double newBendHeight, double newBendLength) {
+int Config::addNewBend(string newBendType, int bendNum, double newBendAngle, double newBendHeight, double newBendLength = 0.0) 
+{
+    if (tubeLength - newBendHeight - newBendLength < 0.0)
+    {
+        return -1;
+    }
+    else if (newBendType != "kick" && newBendType != "offset") 
+    {
+        return -1;
+    }
     bendType[bendNum] = newBendType;
     bendAngles[bendNum] = newBendAngle;
     bendHeight[bendNum] = newBendHeight;
     tubeLength -= newBendHeight;
 
-    if (newBendLength > 0)
+    if (newBendLength > 0.0)
     {
         bendLength[bendNum] = newBendLength;
         tubeLength -= newBendLength;
     }
+    
+    return 0;
 }
 
-void Config::removeBend(int bendNum) {
+void Config::removeBend(int bendNum) 
+{
     bendType[bendNum] = "";
     bendAngles[bendNum] = 0.0;
     bendHeight[bendNum] = 0.0;
     bendLength[bendNum] = 0.0;
 }
 
-Config::~Config() {
+Config::~Config() 
+{
 
 }

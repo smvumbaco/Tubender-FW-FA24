@@ -9,11 +9,11 @@ using namespace std;
  * \brief This class contains parameters for bends and tubes.
  *
  * 
- * @param bendType: Type of the bend.
+ * @param bendType: Type of bends - "kick" or "offset".
  * 
  * @param bendAngles: Array of bend angles.
  * 
- * @param tubeAdvancement: Advancement of the tube.
+ * @param tubeAdvancement: Advancement of the tube before each bend.
  * 
  * @param tubeLength Length of the tube.
  */
@@ -22,17 +22,15 @@ class Config {
     public:
     
         Config(double initTubeLength);
-
-        string bendType[5];
-        double bendAngles[5];
-        double bendHeight[5];
-        double bendLength[5];
-        //TODO find the max number of angles
-        double tubeAdv;
+        //TODO: Confirm max number of bends
+        string bendType[30];
+        double bendAngles[30];
+        double bendHeight[30];
+        double bendLength[30];
+        double tubeAdv[30];
         double tubeLength;
-        void addNewBend(string newBendType, int bendNum, double newBendAngle, double newBendHeight, double newBendLength = 0.0);
+        int addNewBend(string newBendType, int bendNum, double newBendAngle, double newBendHeight, double newBendLength);
         void removeBend(int bendNum);
-        void setBendAngle(double);
 
         ~Config();
 
