@@ -8,6 +8,9 @@ class TFT {
   public:
     TFT(Adafruit_RA8875 &display) : tft(display) {}
 
+    //Intialize TFT
+    void initialize();
+
     // Text Centering Helpers
     int centerCursor(int inLineLength, int inTextScale);
     void printCenterText(const char text[], size_t textLength, int textScale, int yPos);

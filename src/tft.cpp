@@ -1,5 +1,20 @@
 #include <tft.hpp>
 
+void TFT::initialize() {
+    if (!TFT::tft.begin(RA8875_800x480)) {
+        Serial.println("RA8875 not found ... check wiring?");
+        while (1);
+    }
+    Serial.println("RA8875 initialized!");
+
+    // Configure the display
+    TFT::tft.displayOn(true);
+    TFT::tft.GPIOX(true);      // Enable the TFT - display enable tied to GPIOX
+    TFT::tft.PWM1config(true, RA8875_PWM_CLK_DIV1024); // PWM output for backlight
+    TFT::tft.PWM1out(255);     // Set backlight to maximum brightness
+    TFT::tft.textMode();
+
+}
 
 int TFT::centerCursor(int inLineLength, int inTextScale) {
   return (800 - ((8 * (inTextScale + 1)) * (inLineLength - 1) )) / 2;
