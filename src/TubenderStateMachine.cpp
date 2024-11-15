@@ -3,6 +3,9 @@
 // TubenderStateMachine::TubenderStateMachine(insert expander parameter here) {
 
 // }
+TubenderStateMachine::TubenderStateMachine() {
+
+}
 
 TubenderStateMachine::~TubenderStateMachine() {
 

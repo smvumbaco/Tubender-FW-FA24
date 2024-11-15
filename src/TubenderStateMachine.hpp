@@ -21,6 +21,7 @@ class TubenderStateMachine {
     public:
 
         // Constructor
+        TubenderStateMachine();
         //TubenderStateMachine(put expander parameter(s) in here);
 
         ~TubenderStateMachine();
