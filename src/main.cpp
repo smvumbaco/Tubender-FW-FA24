@@ -1,15 +1,10 @@
 #include "TubenderStateMachine.hpp"
-
-TubenderStateMachine stateMachine();
+#include <Arduino.h>
 
 void setup() {
-
-    Serial.begin(9600);
-
-    TubenderStateMachine.initializePins();
 
 }
 
 void loop() {
-    TubenderStateMachine.handleState();
+
 }
