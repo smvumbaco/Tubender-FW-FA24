@@ -38,15 +38,15 @@ void TubenderStateMachine::initializePins() {
 }
 
 void TubenderStateMachine::start() {
-
+    //write code in here
 }
 
 void TubenderStateMachine::bend() {
-    
+    //write code in here
 }
 
 void TubenderStateMachine::finish() {
-    
+    //write code in here
 }
 
 // Any other methods we wanna include
