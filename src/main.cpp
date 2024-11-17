@@ -5,11 +5,13 @@ TubenderStateMachine stateMachine;
 
 void setup() {
 
-    Serial.begin(9600);
+    Serial.begin(115200);
     stateMachine.initializePins();
 
 }
 
 void loop() {
-    stateMachine.handleState();
+    //stateMachine.handleState();
+    stateMachine.start();
+    delay(20000);
 }
