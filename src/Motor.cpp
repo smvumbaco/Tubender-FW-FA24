@@ -1,56 +1,50 @@
-#ifndef MOTOR_HPP
-#define MOTOR_HPP
+#include "Motor.hpp"
+#include <Arduino.h>
+using namespace std;
 
 
-class Motor {
-  private:
-    int pulPin;
-    int dirPin;
-    int enaPin;
-    int stepsPerRevolution;
-    int currentPosition;
+Motor::Motor(int sPin, int dPin, int delay, String id)
+: stepPin(sPin), dirPin(dPin), stepDelay(delay), motorID(id){
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  digitalWrite(stepPin, LOW);
+  digitalWrite(dirPin, LOW);
+}
 
-  public:
-    Motor();
-    Motor(int pul, int dir, int ena, int stepsPerRev) {
-      pulPin = pul;
-      dirPin = dir;
-      enaPin = ena;
-      stepsPerRevolution = stepsPerRev;
-      currentPosition = 0;
-      pinMode(pulPin, OUTPUT);
-      pinMode(dirPin, OUTPUT);
-      pinMode(enaPin, OUTPUT);
-      digitalWrite(enaPin, LOW);  // Enable the driver
-    
-    ~Motor();
-    }
+void Motor::setDirection(bool clockwise) {
+  digitalWrite(dirPin, clockwise ? HIGH : LOW);
+}
 
-    void move(int steps, bool direction) {
-      digitalWrite(dirPin, direction);
-      for (int i = 0; i < steps; i++) {
-        digitalWrite(pulPin, HIGH);
-        delayMicroseconds(500);  // Adjust speed as needed
-        digitalWrite(pulPin, LOW);
-        delayMicroseconds(500);
-      }
-      currentPosition += (direction ? steps : -steps);
-    }
+void Motor::moveSteps(int steps) {
+  for (int i=0; i < steps; i++) {
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(stepDelay);
+    digitalWrite(stepPin, LOW);
+    delayMicroseconds(stepDelay);
 
-    void enable() {
-      digitalWrite(enaPin, LOW);
-    }
 
-    void disable() {
-      digitalWrite(enaPin, HIGH);
-    }
+    // Can add code for stop conditions or feedback
+  }
+}
 
-    int getCurrentPosition() {
-      return currentPosition;
-    }
+// Move forward by a given number of steps
+void Motor::moveForward(int steps) {
+    setDirection(true);  // Clockwise
+    moveSteps(steps);
+}
 
-    void resetPosition() {
-      currentPosition = 0;
-    }
-};
-#endif
+// Move backward by a given number of steps
+void Motor::moveBackward(int steps) {
+    setDirection(false);  // Counterclockwise
+    moveSteps(steps);
+}
+
+// Stop motor - can be more complex with sensors if required
+void Motor::stopMotor() {
+    digitalWrite(stepPin, LOW);
+}
+
+// Get motor ID (useful for debugging or display)
+String Motor::getMotorID() {
+    return motorID;
+}
