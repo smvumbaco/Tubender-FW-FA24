@@ -21,7 +21,7 @@ int TFT::centerCursor(int inLineLength, int inTextScale) {
 }
 
 void TFT::printCenterText(const char text[], size_t textLength, int textScale, int yPos) {
-  TFT::tft.textSetCursor(centerCursor(textLength, textScale), 240); // Set Middle Postion
+  TFT::tft.textSetCursor(centerCursor(textLength, textScale), yPos); // Set Middle Postion
   TFT::tft.print(text);
 }
 
@@ -32,15 +32,11 @@ void TFT::displayStartMenu(){
   tft.textColor(RA8875_BLACK, RA8875_WHITE);
   int textScale = 3;
   tft.textEnlarge(textScale);   // Enlarge text to 4X scale
-  char line1[] = "Welcome to Tubender!";
-  tft.textSetCursor((800 - ((8 * (textScale + 1)) * (sizeof(line1) - 1) )) / 2, 100); // Set Middle Postion
-  tft.print(line1);
+  printCenterText("Welcome to Tubender!", sizeof("Welcome to Tubender!"), textScale, 100 );
   //Line 2
   textScale = 2;
   tft.textEnlarge(textScale); //Reduce text size to 3X scale
-  char line2[] = {"Press (START) to begin bending"};
-  tft.textSetCursor((800 - ((8 * (textScale + 1)) * (sizeof(line2) - 1) )) / 2, 300);
-  tft.print("Press (");
+  printCenterText("Press (", sizeof("Press ("), textScale,  300);
   tft.textColor(RA8875_GREEN, RA8875_WHITE);
   tft.print("START");
   tft.textColor(RA8875_BLACK, RA8875_WHITE);
@@ -54,16 +50,18 @@ void TFT::displayBendSelect() {
   int textScale = 3;
   tft.textEnlarge(textScale);   // Enlarge text to 4X scale
   char line[] = "Select a Bend Type:";
-  tft.textSetCursor(centerCursor(sizeof(line), textScale), 100); // Set Middle Postion
+  tft.textSetCursor(centerCursor(sizeof(line), textScale), 70); // Set Middle Postion
   tft.print(line);
   
   textScale = 2;
-  const int y_offset = 100;
+  tft.textEnlarge(textScale);
+  const int y_offset = 70;
   const char* bendOptions[] = {"1) Kick", "2) Offset", "3) Saddle", "4) U-Bend", "5) 3D-Bend" };
 
-  for (int bendNum = 1; bendNum <= sizeof(bendOptions); bendNum++) {
-    printCenterText(bendOptions[bendNum - 1], sizeof(bendOptions[bendNum - 1] - 1), textScale, y_offset + (bendNum * 80) );
+  for (int bendNum = 1; bendNum <= 4; bendNum++) {
+    printCenterText(bendOptions[bendNum - 1], sizeof(bendOptions[bendNum - 1]), textScale, y_offset + (bendNum * 60) );
   }
+  
 }
 
 void TFT::displayVarInputMenu() {
