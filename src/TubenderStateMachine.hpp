@@ -39,9 +39,10 @@
 #define BENDING_R_ENA 28
 
 //Include libraries
-#include "Mux.hpp"
+
 #include "Config.hpp"
-#include "Sensor.hpp"
+#include "Sensors.hpp"
+//#include "Mux.hpp"
 
 // Constant Variables
 const float gravity = 9.81; //this is just an example, delete this if/when we have a real variable
