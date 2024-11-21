@@ -1,10 +1,11 @@
 #include "TubenderStateMachine.hpp"
-#include "Sensors.hpp"
+
 
 
 
 TubenderStateMachine::TubenderStateMachine() 
-: breakBeamBehindChuck(21, "BreakBeam", "Behind Chuck"),
+: mux1(gpioExpander1, BUTTON_PLEX_1), mux2(gpioExpander1, BUTTON_PLEX_2),
+  breakBeamBehindChuck(21, "BreakBeam", "Behind Chuck"),
   breakBeamBeforeDie(22, "BreakBeam", "Before Die Clamp"),
   limitSwitchStart(19, "LimitSwitch", "Start of Range"),
   limitSwitchEnd(18, "LimitSwitch", "End of Range"),
@@ -39,8 +40,25 @@ void TubenderStateMachine::handleState() {
 }
 
 void TubenderStateMachine::initializePins() {
+    // pinMode(LINEAR_POTENTIOMETER_PIN, INPUT);
+    // setup pins for gpioExpander1
+    gpioExpander1.begin_I2C(0x0);
+    delay(10);
+    gpioExpander1.pinMode(BUTTON_PLEX_1, INPUT);
+    gpioExpander1.pinMode(BUTTON_SEL_1A, OUTPUT);
+    gpioExpander1.pinMode(BUTTON_SEL_1B, OUTPUT);
+    gpioExpander1.pinMode(BUTTON_SEL_1C, OUTPUT);
+    gpioExpander1.pinMode(BUTTON_PLEX_2, INPUT);
+    gpioExpander1.pinMode(BUTTON_SEL_2A, OUTPUT);
+    gpioExpander1.pinMode(BUTTON_SEL_2B, OUTPUT);
+    gpioExpander1.pinMode(BUTTON_SEL_2C, OUTPUT);
+
+    gpioExpander2.begin_I2C(0x1);
+    delay(10);
+
+    
     breakBeamBehindChuck.initialize();
-    breakBeamBeforeDie.initialize();
+    breakBeamBeforeDie.initialize();s
     limitSwitchStart.initialize(true);  // Enable pull-up for limit switches
     limitSwitchEnd.initialize(true);   
     proximityOnChuck.initialize();
@@ -49,6 +67,13 @@ void TubenderStateMachine::initializePins() {
 }
 
 void TubenderStateMachine::start() {
+    //after getting initial tube length
+    double initialLength = 240.0;
+    Config tubeConfig(initialLength);
+    tubeConfig.addNewBend("offset", 0, 22.5, 10, 15);
+    Serial.print(tubeConfig.tubeLength);
+    
+    
     Serial.println("Starting...");
 
     // Check the state of all relevant sensors for safety before proceeding
