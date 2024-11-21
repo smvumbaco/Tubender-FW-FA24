@@ -1,6 +1,9 @@
 #ifndef TUBENDERSTATEMACHINE_HPP
 #define TUBENDERSTATEMACHINE_HPP
 
+
+#include <Arduino.h>
+#include "Sensors.hpp"
 // UI pins
 #define LINEAR_POTENTIOMETER_PIN 35
 
@@ -17,6 +20,18 @@ class TubenderStateMachine {
 
     private:
         enum States _currentState;
+
+
+
+
+
+
+        Sensor breakBeamBehindChuck;
+        Sensor breakBeamBeforeDie;
+        Sensor limitSwitchStart;
+        Sensor limitSwitchEnd;
+        Sensor proximityOnChuck;
+
 
     public:
 
