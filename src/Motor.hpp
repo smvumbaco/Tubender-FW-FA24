@@ -34,7 +34,7 @@ class Motor {
 
   public:
 
-    Motor(int sPin, int dPin, int delay, String id);
+    Motor(int sPin, int dPin, int ePin, int delay, String id);
       
     void setDirection(bool clockwise);
 
@@ -45,6 +45,9 @@ class Motor {
     void moveBackward(int steps);
 
     void stopMotor();
+
+    void enableMotor();
+    void disableMotor();
     
     String getMotorID();
 

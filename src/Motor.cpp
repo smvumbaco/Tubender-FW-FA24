@@ -3,12 +3,14 @@
 using namespace std;
 
 
-Motor::Motor(int sPin, int dPin, int delay, String id)
-: stepPin(sPin), dirPin(dPin), stepDelay(delay), motorID(id){
+Motor::Motor(int sPin, int dPin, int ePin, int delay, String id) 
+: stepPin(sPin), dirPin(dPin), enaPin(ePin), stepDelay(delay), motorID(id){
   pinMode(stepPin, OUTPUT);
   pinMode(dirPin, OUTPUT);
+  pinMode(enaPin, OUTPUT);
   digitalWrite(stepPin, LOW);
   digitalWrite(dirPin, LOW);
+  digitalWrite(enaPin, HIGH);   // disables the motor by default
 }
 
 void Motor::setDirection(bool clockwise) {
@@ -21,9 +23,6 @@ void Motor::moveSteps(int steps) {
     delayMicroseconds(stepDelay);
     digitalWrite(stepPin, LOW);
     delayMicroseconds(stepDelay);
-
-
-    // Can add code for stop conditions or feedback
   }
 }
 
@@ -37,6 +36,15 @@ void Motor::moveForward(int steps) {
 void Motor::moveBackward(int steps) {
     setDirection(false);  // Counterclockwise
     moveSteps(steps);
+}
+
+
+void Motor::enableMotor() {
+    digitalWrite(enaPin, LOW);
+}
+
+void Motor::disableMotor() {
+    digitalWrite(enaPin, HIGH);
 }
 
 // Stop motor - can be more complex with sensors if required
