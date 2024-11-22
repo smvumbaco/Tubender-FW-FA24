@@ -17,8 +17,8 @@
 #define ADVANCE_LIMIT_2 24
 #define DIE_BEAM 25
 #define CHUCK_BEAM 26
-#define DIAL_CHANNEL_A 27
-#define DIAL_CHANNEL_B 28
+// #define DIAL_CHANNEL_A 27
+// #define DIAL_CHANNEL_B 28
 
 #define INDUCTIVE_PROX_1 2
 #define INDUCTIVE_PROX_2 3
@@ -41,7 +41,9 @@
 #include "Config.hpp"
 // Constant Variables
 const float gravity = 9.81; //this is just an example, delete this if/when we have a real variable
-
+const double angleToStepsChuck = 10.0; //const that converts angle value to steps
+const double angleToDCBending = 3.0; //const that converts an angle value to DC for linear actuator
+const double lengthToStepsPlatform = 10.0; //const that converts a length
 enum States {
     START,
     BENDING,
