@@ -6,26 +6,34 @@
 #include "Adafruit_MCP23X17.h"
 #include "Motor.hpp"
 #include "Mux.hpp"
+#include "sevenSeg.hpp"
 // #include <Adafruit_RA8875.h>
 
 #define RA8875_CS  5   // Chip select pin
 #define RA8875_RST 4   // Reset pin
 // Pins on main board
 #define CHUCK_CLAMP_DIR 26
+#define DISPLAY_CS 29
 #define DIE_CLAMP_PUL 14
 #define DIE_CLAMP_DIR 16
 #define BENDING_RPWM 13
 #define BENDING_LPWM 23
 #define ADVANCING_PUL 27
 #define ADVANCING_DIR 28
+#define DISPLAY_SCK 30
+#define DISPLAY_MISO 31
+#define SEVEN_SEG_SER 10
+#define SEVEN_SEG_SRCLK 11
+#define SEVEN_SEG_RCLK 12
 #define ROTATION_DIR 8
 #define ROTATION_PUL 9
 
 
 
 
-Adafruit_RA8875 adafruitTFT = Adafruit_RA8875(RA8875_CS, RA8875_RST);
-TFT myTFT = TFT(adafruitTFT);
+// Adafruit_RA8875 adafruitTFT = Adafruit_RA8875(RA8875_CS, RA8875_RST);
+// TFT myTFT = TFT(adafruitTFT);
+
 //Initialize variables for a timer
 Adafruit_MCP23X17 expander1 = Adafruit_MCP23X17();
 Adafruit_MCP23X17 expander2 = Adafruit_MCP23X17();
@@ -51,9 +59,11 @@ Pin chuckClampEnable = {CHUCK_CLAMP_ENA, true};
 Motor chuckClamp = Motor(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
 
 volatile int interruptCounter;
-int newPos;
 // REncoder* encoder = nullptr;
 REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
+// TODO: IDK IF THESE ARE THE RIGHT PINS
+// ShiftRegister74HC595<1> shiftRegister = ShiftRegister74HC595<1>(SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
+// SevenSegmentDisplay sevenSegment = SevenSegmentDisplay(shiftRegister, )
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
@@ -95,7 +105,7 @@ void setup() {
     expander2.pinMode(BENDING_L_ENA, OUTPUT);
     expander2.pinMode(BENDING_R_ENA, OUTPUT);
     Serial.println("Done with setup");
-    myTFT.initialize();
+    // myTFT.initialize();
 
 }
 
@@ -115,9 +125,6 @@ void loop() {
     Serial.println("rotation moving 20 steps"); 
     tubeRotation.moveForward(20);
 
-    myTFT.displayStartMenu();
-
-    
-
+    // myTFT.displayStartMenu();
     
 }

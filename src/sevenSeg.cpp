@@ -1,6 +1,5 @@
 #include <sevenSeg.hpp>
 
-using namespace SevenSegmentDisplay;
 // Function to select a digit using the demux
 void SevenSegmentDisplay::selectDigit(int digit) {
   digitalWrite(DEMUX_A, digit & 0x01);
@@ -12,7 +11,7 @@ void SevenSegmentDisplay::selectDigit(int digit) {
 void SevenSegmentDisplay::displayCharacter(int digit, int value) {
   selectDigit(digit);                    // Select the digit (via demux)
   uint8_t data = segmentMap[value];      // Get segment data for the value
-  shiftRegister.setAll(data);            // Send data to the shift register
+  shiftRegister.setAll(&data);            // Send data to the shift register
 }
 
 void SevenSegmentDisplay::display3Digits(int value) {

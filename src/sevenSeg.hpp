@@ -12,7 +12,7 @@
 class SevenSegmentDisplay {
 public:
   // Constructor
-     SevenSegmentDisplay(ShiftRegister74HC595 &sr, uint8_t data, uint8_t latch, uint8_t clock) 
+     SevenSegmentDisplay(ShiftRegister74HC595<1> &sr, uint8_t data, uint8_t latch, uint8_t clock) 
         : shiftRegister(sr), dataPin(data), latchPin(latch), clockPin(clock) {}
 
 
@@ -45,7 +45,7 @@ public:
         0b01111111, // 8
         0b01101111  // 9
     };
-    ShiftRegister74HC595<1> shiftRegister(dataPin, latchPin, clockPin);
+    ShiftRegister74HC595<1> shiftRegister;
 
     // Helper function to send data to the shift register
     void shiftOutData(uint8_t data);
