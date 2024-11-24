@@ -1,9 +1,13 @@
 #include "TubenderStateMachine.hpp"
+#include "REncoder.hpp"
 
 
-// TubenderStateMachine::TubenderStateMachine(insert expander parameter here) {
+volatile bool buttonPress;
 
-// }
+void IRAM_ATTR buttonPressedInterrupt() {
+    buttonPress = true;
+}
+
 TubenderStateMachine::TubenderStateMachine() : mux1(gpioExpander1, BUTTON_PLEX_1), mux2(gpioExpander1, BUTTON_PLEX_2) {
     
 }
