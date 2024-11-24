@@ -1,18 +1,14 @@
 #ifndef PID_HPP
 #define PID_HPP
 
-// DO I NEED TO DEFINE PINS HERE, OR CAN I ACCESS THE ONES WE DEFINED IN THE STATEMACHINE (MAYBE BY INCLUDING THE STATEMACHINE)
-#define BENDING_LIN_POT 35
-#define BENDING_RPWM 14
-#define BENDING_LPWM 15
-
-// FIGURE OUT HOW TO DEFINE THESE PINS, SINCE THEY'RE ON THE EXPANDER
-#define BENDING_L_ENA 0 
-#define BENDING_R_ENA 0
+#include <Adafruit_MCP23X17.h>
 
 class PID {
     
     private:
+
+        // In order to read from the gpio expander
+        Adafruit_MCP23X17 &gpioExpander;
 
         // Setpoint -> the desired end position
         float setpoint;
@@ -33,7 +29,7 @@ class PID {
         const float limMax = 255.0f; //CHECK THE RANGE FOR PWM WRITING
 
         // Sample Time
-        const float T = 0.05f; // DOUBLE CHECK THAT THIS MEANS WHAT I THINK IT MEANS
+        const float sampleTime = 0.05f; // DOUBLE CHECK THAT THIS MEANS WHAT I THINK IT MEANS
 
         // Controller "memory"
         float integrator;
@@ -46,7 +42,7 @@ class PID {
 
     public:
 
-        PID(); // Constructor
+        PID(Adafruit_MCP23X17 &expander); // Constructor
 
         void prepareNewBend(float angle); // Clears previous variables and sets a setpoint based on a desired angle
 

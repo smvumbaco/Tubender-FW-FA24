@@ -1,10 +1,12 @@
 #include "PID.hpp"
 #include <Arduino.h>
+#include "TubenderStateMachine.hpp" // need this to read pin definitions
 
 // Constructor
-PID::PID(){
+PID::PID(Adafruit_MCP23X17 &expander) : gpioExpander(expander){
   
 }
+
 
 // Clears previous variables and sets a setpoint based on a desired angle
 void PID::prepareNewBend(float angle){
@@ -52,7 +54,7 @@ void PID::run(){
 
 
     // Integral
-    integrator += 0.5f * Ki * T * (error + prevError);
+    integrator += 0.5f * Ki * sampleTime * (error + prevError);
 
     // Anti-wind up via dynamic integrator clamping -> fancy terms for making sure the integral term doesn't go crazy based on our limits, like speed or stroke length
 
@@ -92,7 +94,7 @@ void PID::run(){
 
 
     // Derivative (aka "band-limited differentiator" because it includes a lowpass filter)
-    differentiator = (2.0f * Kd * (measurement-prevMeasurement) + (2.0f * tau - T) * differentiator)/(2.0f * tau + T);
+    differentiator = (2.0f * Kd * (measurement-prevMeasurement) + (2.0f * tau - sampleTime) * differentiator)/(2.0f * tau + sampleTime);
 
 
     // Add the PID terms together
@@ -139,7 +141,7 @@ void PID::run(){
 
 
     // Delaying based on the sample rate
-    delay(T*1000); 
+    delay(sampleTime*1000); 
 
 }
 
