@@ -5,8 +5,9 @@
 // Constructor
 PID::PID(Adafruit_MCP23X17 &expander) : gpioExpander(expander){
   
-}
+    prevTime = millis() - sampleTime; // starts the millis timer and offsets it so that .run() can be used immediately
 
+}
 
 // Clears previous variables and sets a setpoint based on a desired angle
 void PID::prepareNewBend(float angle){
@@ -16,14 +17,22 @@ void PID::prepareNewBend(float angle){
     prevError = 0.0f;
     differentiator = 0.0f;
     prevMeasurement = 0.0f;
-    out = 0.0f;
+    output = 0.0f;
 
     // Define setpoint based on the angle
-    setpoint = 10.0f; // CHANGE THIS TO CONVERT ANGLE TO SETPOINT IN INCHES, THROW AN ERROR IF OUTSIDE OF RANGE
+    if (angle <= 50) { // angles larger than 50 degrees are outside our range  
+
+        setpoint = 4095 - (4095/16) * (14*(tan(15*(PI/180))+tan((angle-15)*(PI/180)))); // units = ADC (0-4095) ***TUNE THIS CONVERSION***
+
+    } else {
+
+        // ***THROW AN ERROR***
+
+    }
 
 }
 
-// Clears previous variables and sets the setpoint to 0 to fully retract
+// Clears previous variables and sets the setpoint to fully retract
 void PID::prepareHome(){
     
     // Clear old variables
@@ -31,127 +40,133 @@ void PID::prepareHome(){
     prevError = 0.0f;
     differentiator = 0.0f;
     prevMeasurement = 0.0f;
-    out = 0.0f;
+    output = 0.0f;
 
     // Define setpoint
-    setpoint = 0.0f;    
+    setpoint = 4095.0f;    
 
 }
 
 // Runs the linear actuator by regularly updating the output of the PID controller based on the sensor input and setpoint value
 void PID::run(){
 
-    //FIGURE OUT UNITS FOR EVERYTHING, SOME STUFF IS INCHES, SOME STUFF IS PWM LENGTH
+    continueBend = true;
 
-    measurement = analogRead(BENDING_LIN_POT); // MAYBE CONVERT THIS VALUE TO INCHES RIGHT IN THIS LINE
+    while (continueBend == true) {
 
-    // Error Signal
-    float error = setpoint - measurement;
-
-
-    // Proportional
-    float proportional = Kp * error;
-
-
-    // Integral
-    integrator += 0.5f * Ki * sampleTime * (error + prevError);
-
-    // Anti-wind up via dynamic integrator clamping -> fancy terms for making sure the integral term doesn't go crazy based on our limits, like speed or stroke length
-
-    // First, dynamically figuring out the integrator limits (different from output limits!)
-    float limMinIntegrator, limMaxIntegrator;
-
-    if (limMax > proportional) { 
+        unsigned long now = millis(); // millis timer to account for any processing time that this PID calculation takes instead of just a delay
+        unsigned long timeChange = (now - prevTime);
+        if (timeChange >= sampleTime) {
     
-        limMaxIntegrator = limMax - proportional;
 
-    } else { 
+            measurement = analogRead(BENDING_LIN_POT); // 0-4095 since 12-bit ADC
 
-        limMaxIntegrator = 0.0f;
+            // Error Signal
+            float error = setpoint - measurement;
 
+
+            // Proportional
+            float proportional = Kp * error;
+
+
+            // Integral
+            integrator += 0.5f * Ki * (sampleTime/1000) * (error + prevError);
+
+            // Anti-wind up via dynamic integrator clamping -> fancy terms for making sure the integral part isn't counted if we're far from the setpoint
+
+            // First, dynamically figuring output the integrator limits (different from output limits!)
+            float limMinIntegrator, limMaxIntegrator;
+
+            if (limMax > proportional) { 
+            
+                limMaxIntegrator = limMax - proportional;
+
+            } else { 
+
+                limMaxIntegrator = 0.0f;
+
+            }
+
+            if (limMin < proportional) { 
+            
+                limMinIntegrator = limMin - proportional;
+
+            } else { 
+
+                limMinIntegrator = 0.0f;
+                
+            }
+
+            // Next, clamping the integrator values to those limits
+            if (integrator > limMaxIntegrator) {
+
+                integrator = limMaxIntegrator;
+
+            } else if (integrator < limMinIntegrator) {
+
+                integrator = limMinIntegrator;
+
+            }
+
+
+            // Derivative (aka "band-limited differentiator" because it includes a lowpass filter)
+            differentiator = (2.0f * Kd * (measurement-prevMeasurement) + (2.0f * tau - (sampleTime/1000)) * differentiator)/(2.0f * tau + (sampleTime/1000));
+
+
+            // Add the PID terms together
+            output = proportional + integrator + differentiator;
+
+
+            // Limiting the output to the intended range
+            if (output > limMax) {
+
+                output = limMax;
+
+            } else if (output < limMin) {
+
+                output = limMin;
+
+            }
+
+
+            // Update the previous values for future use
+            prevError = error;
+            prevMeasurement = measurement;
+            prevTime = now;
+
+
+            // Running the linear actuator
+            if (output > 10.0f) { // Backward ***CHECK THIS DIRECTION***
+                
+                gpioExpander.digitalWrite(BENDING_L_ENA, HIGH);
+                gpioExpander.digitalWrite(BENDING_R_ENA, HIGH);
+                analogWrite(BENDING_LPWM, output);
+                analogWrite(BENDING_RPWM, 0);
+
+            } else if (output < -10.0f) { // Forward ***CHECK THIS DIRECTION***
+
+                gpioExpander.digitalWrite(BENDING_L_ENA, HIGH);
+                gpioExpander.digitalWrite(BENDING_R_ENA, HIGH);
+                analogWrite(BENDING_LPWM, 0);
+                analogWrite(BENDING_RPWM, abs(output));        
+
+            } else { // Stop since within range ***CHECK THIS RANGE***
+
+                stop();        
+
+            }
+        }
     }
-
-    if (limMin < proportional) { 
-    
-        limMinIntegrator = limMin - proportional;
-
-    } else { 
-
-        limMinIntegrator = 0.0f;
-        
-    }
-
-    // Next, clamping the integrator values to those limits
-    if (integrator > limMaxIntegrator) {
-
-        integrator = limMaxIntegrator;
-
-    } else if (integrator < limMinIntegrator) {
-
-        integrator = limMinIntegrator;
-
-    }
-
-
-    // Derivative (aka "band-limited differentiator" because it includes a lowpass filter)
-    differentiator = (2.0f * Kd * (measurement-prevMeasurement) + (2.0f * tau - sampleTime) * differentiator)/(2.0f * tau + sampleTime);
-
-
-    // Add the PID terms together
-    out = proportional + integrator + differentiator;
-
-
-    // Limiting the output to the intended range
-    if (out > limMax) {
-
-        out = limMax;
-
-    } else if (out < limMin) {
-
-        out = limMin;
-
-    }
-
-
-    // Update the previous values for future use
-    prevError = error;
-    prevMeasurement = measurement;
-
-
-    // Running the linear actuator
-    if (out > 0.01f) { // Forward CHECK THIS DIRECTION
-        
-        digitalWrite(BENDING_L_ENA, HIGH);
-        digitalWrite(BENDING_R_ENA, HIGH);
-        analogWrite(BENDING_LPWM, out);
-        analogWrite(BENDING_RPWM, 0.0f);
-
-    } else if (out < -0.01f) { // Backward CHECK THIS DIRECTION
-
-        digitalWrite(BENDING_L_ENA, HIGH);
-        digitalWrite(BENDING_R_ENA, HIGH);
-        analogWrite(BENDING_LPWM, 0.0f);
-        analogWrite(BENDING_RPWM, out);        
-
-    } else { // Stop since within range EDIT THIS RANGE
-
-        stop();        
-
-    }
-
-
-    // Delaying based on the sample rate
-    delay(sampleTime*1000); 
-
 }
 
 
 // Stops the linear actuator
 void PID::stop() {
-    digitalWrite(BENDING_L_ENA, LOW);
-    digitalWrite(BENDING_R_ENA, LOW);
-    analogWrite(BENDING_LPWM, 0.0f);
-    analogWrite(BENDING_RPWM, 0.0f);    
+    gpioExpander.digitalWrite(BENDING_L_ENA, LOW);
+    gpioExpander.digitalWrite(BENDING_R_ENA, LOW);
+    analogWrite(BENDING_LPWM, 0);
+    analogWrite(BENDING_RPWM, 0);  
+    continueBend = false;  
 }
 
 

@@ -22,14 +22,14 @@ class PID {
         const float Kd = 0.0f;
 
         // Derivative low-pass filter time constant -> to avoid amplification of high frequency noise
-        const float tau = 1.0f;
+        const float tau = 1.0f; // ***CHOOSE A BETTER VALUE FOR LOW PASS FILTER (IF Kd > 0, OTHERWISE UNNECESSARY)***
 
         // Output limits -> to make sure we don't send signals outside the linear actuator's input range
-        const float limMin = 0.0f;
-        const float limMax = 255.0f; //CHECK THE RANGE FOR PWM WRITING
+        const float limMin = -255.0f; // duty cycle
+        const float limMax = 255.0f; // duty cycle
 
         // Sample Time
-        const float sampleTime = 0.05f; // DOUBLE CHECK THAT THIS MEANS WHAT I THINK IT MEANS
+        const float sampleTime = 100.0f; // milliseconds
 
         // Controller "memory"
         float integrator;
@@ -38,7 +38,13 @@ class PID {
         float prevMeasurement; // Required for differentiator
 
         // Controller Output
-        float out;
+        float output;
+
+        // While true, PID.run() continues to loop, and stops when it's false
+        bool continueBend;
+
+        // Used for millis timer
+        unsigned long prevTime;
 
     public:
 
@@ -46,7 +52,7 @@ class PID {
 
         void prepareNewBend(float angle); // Clears previous variables and sets a setpoint based on a desired angle
 
-        void prepareHome(); // Clears previous variables and sets the setpoint to 0 to fully retract
+        void prepareHome(); // Clears previous variables and sets the setpoint to fully retract
 
         void run(); // Runs the linear actuator by regularly updating the output of the PID controller based on the sensor input and setpoint value
 
