@@ -1,7 +1,7 @@
 #ifndef TUBENDERSTATEMACHINE_HPP
 #define TUBENDERSTATEMACHINE_HPP
 
-
+// Update sensor pins / check that they're correct
 
 // UI pins
 #define LINEAR_POTENTIOMETER_PIN 35
@@ -42,7 +42,7 @@
 
 #include "Config.hpp"
 #include "Sensors.hpp"
-//#include "Mux.hpp"
+#include "Mux.hpp"
 
 // Constant Variables
 const float gravity = 9.81; //this is just an example, delete this if/when we have a real variable

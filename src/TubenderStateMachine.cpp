@@ -61,7 +61,7 @@ void TubenderStateMachine::initializePins() {
 
     
     breakBeamBehindChuck.initialize();
-    breakBeamBeforeDie.initialize();s
+    breakBeamBeforeDie.initialize();
     limitSwitchStart.initialize(true);  // Enable pull-up for limit switches
     limitSwitchEnd.initialize(true);   
     proximityOnChuck.initialize();
@@ -97,6 +97,7 @@ void TubenderStateMachine::start() {
         Serial.println("Safety conditions not met. Holding...");
     }
 }
+
 
 void TubenderStateMachine::bend() {
     Serial.println("Bending...");
