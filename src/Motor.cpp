@@ -2,29 +2,79 @@
 #include <Arduino.h>
 using namespace std;
 
-
-Motor::Motor(int sPin, int dPin, int delay, String id)
-: stepPin(sPin), dirPin(dPin), stepDelay(delay), motorID(id){
-  pinMode(stepPin, OUTPUT);
-  pinMode(dirPin, OUTPUT);
-  digitalWrite(stepPin, LOW);
-  digitalWrite(dirPin, LOW);
+//The order of pins should be step pin, dir pin, enable pin 
+Motor::Motor(Adafruit_MCP23X17 *gpioExpander, Pin pulPin, Pin dPin, Pin enPin, int delay, String id)
+: expander(gpioExpander), stepPin(pulPin), dirPin(dPin), enaPin(enPin), stepDelay(delay), motorID(id) {
+  
+  setPulPin(stepPin);
+  setDirPin(dPin);
+  setEnaPin(enPin);
 }
 
+//sets the pull pin. if onExpander is true, sets pulPin on the current Motor object's GPIO expander.
+void Motor::setPulPin(Pin pulPin) {
+  stepPin = pulPin;
+  if (pulPin.onExpander == true) {
+    expander->pinMode(stepPin.pin, OUTPUT);
+    expander->digitalWrite(stepPin.pin, LOW);
+  } else {
+      pinMode(stepPin.pin, OUTPUT);
+      digitalWrite(stepPin.pin, LOW);
+  }
+}
+
+void Motor::setDirPin(Pin directionPin) {
+  dirPin = directionPin;
+  if (dirPin.onExpander == true) {
+    expander->pinMode(dirPin.pin, OUTPUT);
+    expander->digitalWrite(dirPin.pin, LOW);
+  } else {
+      pinMode(dirPin.pin, OUTPUT);
+      digitalWrite(dirPin.pin, LOW);
+  }
+}
+
+//set enaPin attribute of Motor and set it to its default
+void Motor::setEnaPin(Pin enPin) {
+  enaPin = enPin;
+  if (enaPin.onExpander == true) {
+    expander->pinMode(enaPin.pin, OUTPUT);
+    expander->digitalWrite(enaPin.pin, HIGH);
+  } else {
+      pinMode(enaPin.pin, OUTPUT);
+      digitalWrite(enaPin.pin, HIGH);
+  }
+}
+
+
 void Motor::setDirection(bool clockwise) {
-  digitalWrite(dirPin, clockwise ? HIGH : LOW);
+  if (dirPin.onExpander) {
+    expander->digitalWrite(dirPin.pin, clockwise ? HIGH : LOW);
+  } else {
+    digitalWrite(dirPin.pin, clockwise ? HIGH : LOW);
+  }
 }
 
 void Motor::moveSteps(int steps) {
-  for (int i=0; i < steps; i++) {
-    digitalWrite(stepPin, HIGH);
+  if (stepPin.onExpander) {
+    for (int i=0; i < steps; i++) {
+      expander->digitalWrite(stepPin.pin, HIGH);
+      delayMicroseconds(stepDelay);
+      expander->digitalWrite(stepPin.pin, LOW);
+      delayMicroseconds(stepDelay);
+    }
+  } else {
+    for (int i=0; i < steps; i++) {
+    digitalWrite(stepPin.pin, HIGH);
     delayMicroseconds(stepDelay);
-    digitalWrite(stepPin, LOW);
+    digitalWrite(stepPin.pin, LOW);
     delayMicroseconds(stepDelay);
-
 
     // Can add code for stop conditions or feedback
+    }
   }
+  
+  
 }
 
 // Move forward by a given number of steps
@@ -41,7 +91,12 @@ void Motor::moveBackward(int steps) {
 
 // Stop motor - can be more complex with sensors if required
 void Motor::stopMotor() {
-    digitalWrite(stepPin, LOW);
+    if (enaPin.onExpander) {
+      expander->digitalWrite(enaPin.pin, HIGH);
+    } else {
+      digitalWrite(enaPin.pin, HIGH);
+
+    }
 }
 
 // Get motor ID (useful for debugging or display)
