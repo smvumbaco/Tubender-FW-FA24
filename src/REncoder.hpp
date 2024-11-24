@@ -14,7 +14,7 @@ class REncoder : public RotaryEncoder {
     public:
         REncoder(Adafruit_MCP23X17 &expander, int pin1, int pin2, LatchMode mode);
         virtual void IRAM_ATTR tick();
-        ~REncoder();
+        virtual ~REncoder();
 };
 
 #endif
