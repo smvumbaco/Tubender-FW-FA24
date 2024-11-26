@@ -4,43 +4,39 @@
 // UI pins
 #define LINEAR_POTENTIOMETER_PIN 35
 //GPIO Expander 1 pins
-#define BUTTON_PLEX_1 1
-#define BUTTON_SEL_1A 2
-#define BUTTON_SEL_1B 3
-#define BUTTON_SEL_1C 4
-#define BUTTON_PLEX_2 5
-#define BUTTON_SEL_2A 6
-#define BUTTON_SEL_2B 7
-#define BUTTON_SEL_2C 8
-#define DIE_LIMIT_1 21
-#define DIE_LIMIT_2 22
-#define ADVANCE_LIMIT_1 23
-#define ADVANCE_LIMIT_2 24
-#define DIE_BEAM 25
-#define CHUCK_BEAM 26
+#define BUTTON_PLEX_1 0
+#define BUTTON_SEL_1A 1
+#define BUTTON_SEL_1B 2
+#define BUTTON_SEL_1C 3
+#define BUTTON_PLEX_2 4
+#define BUTTON_SEL_2A 5
+#define BUTTON_SEL_2B 6
+#define BUTTON_SEL_2C 7
+#define DIE_LIMIT_1 8
+#define DIE_LIMIT_2 9
+#define ADVANCE_LIMIT_1 10
+#define ADVANCE_LIMIT_2 11
+#define DIE_BEAM 12
+#define CHUCK_BEAM 13
 // #define DIAL_CHANNEL_A 27
 // #define DIAL_CHANNEL_B 28
 #define INT_A 20
 
-
-
-// Pins on GPIO expander 2
-
-#define INDUCTIVE_PROX_1 2
-#define INDUCTIVE_PROX_2 3
-#define DISPLAY_WAIT 4
-#define DISPLAY_INT 5
-#define DIE_CLAMP_ENA 6
-#define ROTATION_ENA 7
-#define ADVANCING_ENA 8
-#define SEVEN_SEG_A0 21
-#define SEVEN_SEG_A1 22
-#define SEVEN_SEG_GB 23
-#define SEVEN_SEG_OEB 24
-#define CHUCK_CLAMP_ENA 25
-#define CHUCK_CLAMP_PUL 26
-#define BENDING_L_ENA 27
-#define BENDING_R_ENA 28
+#define INDUCTIVE_PROX_1 1
+#define INDUCTIVE_PROX_2 2
+#define DISPLAY_WAIT 3
+#define DISPLAY_INT 4
+#define DIE_CLAMP_ENA 5
+#define ROTATION_ENA 6
+#define ADVANCING_ENA 7
+#define SEVEN_SEG_A0 8
+#define SEVEN_SEG_A1 9
+#define SEVEN_SEG_GB 10
+#define SEVEN_SEG_OEB 11
+#define CHUCK_CLAMP_ENA 12
+#define CHUCK_CLAMP_PUL 13
+#define BENDING_L_ENA 14
+#define BENDING_R_ENA 15
 
 
 //Include libraries

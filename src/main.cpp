@@ -12,21 +12,21 @@
 #define RA8875_CS  5   // Chip select pin
 #define RA8875_RST 4   // Reset pin
 // Pins on main board
-#define CHUCK_CLAMP_DIR 26
-#define DISPLAY_CS 29
-#define DIE_CLAMP_PUL 14
-#define DIE_CLAMP_DIR 16
-#define BENDING_RPWM 13
-#define BENDING_LPWM 23
-#define ADVANCING_PUL 27
-#define ADVANCING_DIR 28
-#define DISPLAY_SCK 30
-#define DISPLAY_MISO 31
-#define SEVEN_SEG_SER 10
-#define SEVEN_SEG_SRCLK 11
+#define CHUCK_CLAMP_DIR 4
+#define DISPLAY_CS 5
+#define DIE_CLAMP_PUL 12
+#define DIE_CLAMP_DIR 13
+#define BENDING_RPWM 14
+#define BENDING_LPWM 15
+#define ADVANCING_PUL 16
+#define ADVANCING_DIR 17
+#define DISPLAY_SCK 18
+#define DISPLAY_MISO 23
+#define SEVEN_SEG_SER 25
+#define SEVEN_SEG_SRCLK 26
 #define SEVEN_SEG_RCLK 12
-#define ROTATION_DIR 8
-#define ROTATION_PUL 9
+#define ROTATION_DIR 32
+#define ROTATION_PUL 33
 
 
 
@@ -58,12 +58,15 @@ Pin chuckClampDir = {CHUCK_CLAMP_DIR, false};
 Pin chuckClampEnable = {CHUCK_CLAMP_ENA, true};
 Motor chuckClamp = Motor(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
 
+
+
 volatile int interruptCounter;
+volatile int encoderCount;
 // REncoder* encoder = nullptr;
 REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
 // TODO: IDK IF THESE ARE THE RIGHT PINS
-ShiftRegister74HC595<1> shiftRegister = ShiftRegister74HC595<1>(SEVEN_SEG_SER,SEVEN_SEG_SRCLK, SEVEN_SEG_RCLK);
-SevenSegmentDisplay sevenSegment = SevenSegmentDisplay(shiftRegister, SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
+ShiftRegister74HC595<1> shiftRegister = ShiftRegister74HC595<1>(SEVEN_SEG_SER, SEVEN_SEG_SRCLK, SEVEN_SEG_RCLK);
+SevenSegmentDisplay sevenSegment = SevenSegmentDisplay(shiftRegister, expander2, SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
@@ -80,11 +83,12 @@ void setup() {
     Serial.begin(115200);
     while (!Serial)
         ;
-    Serial.println("starting setup");
-    expander1.begin_I2C(0x0);
-    delayMicroseconds(10);
-    expander2.begin_I2C(0x1);
-    delayMicroseconds(10);
+    pinMode(SEVEN_SEG_SER, OUTPUT);
+    pinMode(SEVEN_SEG_SRCLK, OUTPUT);
+    pinMode(SEVEN_SEG_RCLK, OUTPUT);
+
+    expander1.begin_I2C(0x20);
+    delayMicroseconds(1000);
     expander1.pinMode(BUTTON_PLEX_1, INPUT);
     expander1.pinMode(BUTTON_SEL_1A, OUTPUT);
     expander1.pinMode(BUTTON_SEL_1B, OUTPUT);
@@ -95,6 +99,11 @@ void setup() {
     expander1.pinMode(BUTTON_SEL_2C, OUTPUT);
     expander1.pinMode(DIE_LIMIT_1, INPUT);
     expander1.pinMode(DIE_LIMIT_2, INPUT);
+    Serial.println("Expander 1 Done");
+    
+    
+    expander2.begin_I2C(0x21);
+    delayMicroseconds(1000);
     expander2.pinMode(INDUCTIVE_PROX_1, INPUT);
     expander2.pinMode(INDUCTIVE_PROX_2, INPUT);
     expander2.pinMode(DISPLAY_WAIT, OUTPUT);
@@ -105,42 +114,56 @@ void setup() {
     expander2.pinMode(SEVEN_SEG_OEB, OUTPUT);
     expander2.pinMode(BENDING_L_ENA, OUTPUT);
     expander2.pinMode(BENDING_R_ENA, OUTPUT);
+    
+    Serial.println("Expander 2 Done");
     Serial.println("Done with setup");
     // myTFT.initialize();
 
 }
 
 void loop() {
-    Serial.println("advancing moving 20 steps");
-    advancing.moveForward(20);
+    // Serial.println("advancing moving 20 steps");
+    // advancing.moveForward(20);
 
-    delay(1000);
-    Serial.println("chuck clamp moving 20 steps");
-    chuckClamp.moveForward(20);
+    // delay(1000);
+    // Serial.println("chuck clamp moving 20 steps");
+    // chuckClamp.moveForward(20);
 
-    delay(1000);
-    Serial.println("die clamp moving 20 steps");
-    dieClamp.moveForward(20);
+    // delay(1000);
+    // Serial.println("die clamp moving 20 steps");
+    // dieClamp.moveForward(20);
 
-    delay(1000);
-    Serial.println("rotation moving 20 steps"); 
-    tubeRotation.moveForward(20);
+    // delay(1000);
+    // Serial.println("rotation moving 20 steps"); 
+    // tubeRotation.moveForward(20);
 
     // myTFT.displayStartMenu();
-    
+    // if (interruptCounter > 0) {
+    //     Serial.println("interrupt detected");
+
+    //     portENTER_CRITICAL_ISR(&timerMux);
+    //     encoderCount = encoder.getPosition();
+    //     interruptCounter--;
+    //     portEXIT_CRITICAL_ISR(&timerMux);
+    //     sevenSegment.displayCharacter(0, encoderCount);
+    // }
+
     //Seven Segment Test Code:
 
     //  Testing 3 Digit write
-    //sevenSegment.display3Digits(000)
-    //delay(1000);
-    //sevenSegment.display3Digits(888)
-    //delay(1000);
+    Serial.println("displaying 000");
+
+    sevenSegment.display3Digits(000);
+    delay(10000);
+    Serial.println("displaying 888");
+    sevenSegment.display3Digits(888);
+    delay(10000);
 
     // Testing 1 digit write
-    //sevenSegment.displayCharacter(0, 1);
-    //delay(500);
-    //sevenSegment.displayCharacter(1, 2);
-    //delay(500);
-    //sevenSegment.displayCharacter(1, 3);
+    sevenSegment.displayCharacter(0, 1);
+    delay(500);
+    sevenSegment.displayCharacter(1, 2);
+    delay(500);
+    sevenSegment.displayCharacter(1, 3);
     
 }
