@@ -80,6 +80,7 @@ void setup() {
     Serial.begin(115200);
     while (!Serial)
         ;
+    Serial.println("starting setup");
     expander1.begin_I2C(0x0);
     delayMicroseconds(10);
     expander2.begin_I2C(0x1);
