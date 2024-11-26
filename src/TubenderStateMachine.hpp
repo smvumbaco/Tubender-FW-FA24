@@ -36,8 +36,8 @@
 #define SEVEN_SEG_OEB 24
 #define CHUCK_CLAMP_ENA_POS 25
 #define CHUCK_CLAMP_PUL_POS 26
-#define BENDING_L_ENA 27
-#define BENDING_R_ENA 28
+#define BENDING_L_ENA 6
+#define BENDING_R_ENA 7
 
 //Include libraries
 #include "Mux.hpp"
