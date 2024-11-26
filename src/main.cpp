@@ -62,8 +62,8 @@ volatile int interruptCounter;
 // REncoder* encoder = nullptr;
 REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
 // TODO: IDK IF THESE ARE THE RIGHT PINS
-// ShiftRegister74HC595<1> shiftRegister = ShiftRegister74HC595<1>(SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
-// SevenSegmentDisplay sevenSegment = SevenSegmentDisplay(shiftRegister, )
+ShiftRegister74HC595<1> shiftRegister = ShiftRegister74HC595<1>(SEVEN_SEG_SER,SEVEN_SEG_SRCLK, SEVEN_SEG_RCLK);
+SevenSegmentDisplay sevenSegment = SevenSegmentDisplay(shiftRegister, SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
