@@ -43,7 +43,7 @@ void TubenderStateMachine::initializePins() {
 
     // pinMode(LINEAR_POTENTIOMETER_PIN, INPUT);
     // setup pins for gpioExpander1
-    gpioExpander1.begin_I2C(0x0);
+    gpioExpander1.begin_I2C(0x20);
     delay(10);
     gpioExpander1.pinMode(BUTTON_PLEX_1, INPUT);
     gpioExpander1.pinMode(BUTTON_SEL_1A, OUTPUT);
@@ -54,7 +54,7 @@ void TubenderStateMachine::initializePins() {
     gpioExpander1.pinMode(BUTTON_SEL_2B, OUTPUT);
     gpioExpander1.pinMode(BUTTON_SEL_2C, OUTPUT);
 
-    gpioExpander2.begin_I2C(0x1);
+    gpioExpander2.begin_I2C(0x21);
     delay(10);
     
 }
