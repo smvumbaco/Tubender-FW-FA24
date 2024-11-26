@@ -127,5 +127,22 @@ void loop() {
     tubeRotation.moveForward(20);
 
     // myTFT.displayStartMenu();
+
+    //Seven Segment Test Code:
+
+    //  Testing 3 Digit write
+    //sevenSegment.display3Digits(000)
+    //delay(1000);
+    //sevenSegment.display3Digits(888)
+    //delay(1000);
+
+    // Testing 1 digit write
+    //sevenSegment.displayCharacter(0, 1);
+    //delay(500);
+    //sevenSegment.displayCharacter(1, 2);
+    //delay(500);
+    //sevenSegment.displayCharacter(1, 3);
+
+
     
 }
