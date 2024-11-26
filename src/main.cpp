@@ -1,22 +1,23 @@
 #include "TubenderStateMachine.hpp"
-#include <tft.hpp>
+#include "PID.hpp"
 #include <Arduino.h>
-#include <Adafruit_RA8875.h>
 
-#define RA8875_CS  5   // Chip select pin
-#define RA8875_RST 4   // Reset pin
-
-Adafruit_RA8875 adafruitTFT = Adafruit_RA8875(RA8875_CS, RA8875_RST);
+Adafruit_MCP23X17 gpioExpander1;
+PID BendingPID(gpioExpander1);
 
 void setup() {
-    Serial.begin(115200);
-    TFT myTFT(adafruitTFT);
-    myTFT.initialize();
-    myTFT.displayStartMenu();
 
+    Serial.begin(115200);
 
 }
 
 void loop() {
+    
+    BendingPID.prepareNewBend(45);
+    BendingPID.run();
+    delay(5000);
+    BendingPID.prepareHome();
+    BendingPID.run();
+    delay(5000);
 
 }
