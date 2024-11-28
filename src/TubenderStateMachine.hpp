@@ -18,8 +18,7 @@
 #define ADVANCE_LIMIT_2 3
 #define DIE_BEAM 4
 #define CHUCK_BEAM 5
-#define DIAL_CHANNEL_A 6
-#define DIAL_CHANNEL_B 7
+
 #define INT_A 20
 
 //gpioExpander2 pins

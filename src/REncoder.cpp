@@ -1,6 +1,6 @@
 #include "REncoder.hpp"
 
-REncoder::REncoder(Adafruit_MCP23X17 &expander, int pinA, int pinB, LatchMode mode):RotaryEncoder(pinA, pinB, mode), gpioExpander(expander),encoder(DIAL_CHANNEL_A, DIAL_CHANNEL_B) {
+REncoder::REncoder(Adafruit_MCP23X17 &expander, int pinA, int pinB, LatchMode mode):RotaryEncoder(pinA, pinB, mode), gpioExpander(expander) {
 }
 
 

@@ -35,8 +35,8 @@
 // TFT myTFT = TFT(adafruitTFT);
 
 //Initialize variables for a timer
-Adafruit_MCP23X17 expander1 = Adafruit_MCP23X17();
-Adafruit_MCP23X17 expander2 = Adafruit_MCP23X17();
+Adafruit_MCP23X17 expander1;
+Adafruit_MCP23X17 expander2;
 
 Pin advancingPul = {ADVANCING_PUL, false};
 Pin advancingDir = {ADVANCING_DIR, false};
@@ -63,7 +63,7 @@ Motor chuckClamp = Motor(&expander2, chuckClampPul, chuckClampDir, chuckClampEna
 volatile int interruptCounter;
 volatile int encoderCount;
 // REncoder* encoder = nullptr;
-REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
+// REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
 // TODO: IDK IF THESE ARE THE RIGHT PINS
 ShiftRegister74HC595<1> shiftRegister = ShiftRegister74HC595<1>(SEVEN_SEG_SER, SEVEN_SEG_SRCLK, SEVEN_SEG_RCLK);
 SevenSegmentDisplay sevenSegment = SevenSegmentDisplay(shiftRegister, expander2, SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
@@ -71,11 +71,22 @@ hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
 
-void IRAM_ATTR onTimer() {
-    portENTER_CRITICAL_ISR(&timerMux);
-    encoder.tick();
-    interruptCounter++;
-    portEXIT_CRITICAL_ISR(&timerMux);
+// void IRAM_ATTR onTimer() {
+//     portENTER_CRITICAL_ISR(&timerMux);
+//     encoder.tick();
+//     interruptCounter++;
+//     portEXIT_CRITICAL_ISR(&timerMux);
+// }
+
+volatile bool dialChannelAInterrupt = false;
+volatile bool dialChannelBInterrupt = false;
+
+void IRAM_ATTR handleDialChannelAInterrupt() {
+    dialChannelAInterrupt = true;
+}
+
+void IRAM_ATTR handleDialChannelBInterrupt() {
+    dialChannelBInterrupt = true;
 }
 
 
@@ -99,6 +110,13 @@ void setup() {
     expander1.pinMode(BUTTON_SEL_2C, OUTPUT);
     expander1.pinMode(DIE_LIMIT_1, INPUT);
     expander1.pinMode(DIE_LIMIT_2, INPUT);
+
+    //tests for rencoder
+    expander1.setupInterrupts(false, false, LOW);
+    expander1.pinMode(DIAL_CHANNEL_A, INPUT_PULLUP);
+    expander1.setupInterruptPin(DIAL_CHANNEL_A, LOW);
+    expander1.pinMode(DIAL_CHANNEL_B, INPUT_PULLUP);
+    expander1.setupInterruptPin(DIAL_CHANNEL_B, LOW);
     Serial.println("Expander 1 Done");
     
     
@@ -122,6 +140,26 @@ void setup() {
 }
 
 void loop() {
+    if (dialChannelAInterrupt) {
+        Serial.println("channel a interrupt");
+        dialChannelAInterrupt = false;
+        u_int16_t state = expander1.getCapturedInterrupt();
+        bool a_state = (state>>6) & 0x1;
+        bool b_state = (state>>7) & 0x1;
+        Serial.printf("dial channel a = %d, dial channel b = %d\n", a_state, b_state);
+        expander1.clearInterrupts();
+    }
+
+    if (dialChannelBInterrupt) {
+        Serial.println("channel b interrupt");
+        dialChannelBInterrupt = false;
+        u_int16_t state = expander1.getCapturedInterrupt();
+        bool a_state = (state>>6) & 0x1;
+        bool b_state = (state>>7) & 0x1;
+        Serial.printf("dial channel a = %d, dial channel b = %d\n", a_state, b_state);
+        expander1.clearInterrupts();
+    }
+    
     // Serial.println("advancing moving 20 steps");
     // advancing.moveForward(20);
 
@@ -150,20 +188,20 @@ void loop() {
 
     //Seven Segment Test Code:
 
-    //  Testing 3 Digit write
-    Serial.println("displaying 000");
+    // //  Testing 3 Digit write
+    // Serial.println("displaying 000");
 
-    sevenSegment.display3Digits(000);
-    delay(10000);
-    Serial.println("displaying 888");
-    sevenSegment.display3Digits(888);
-    delay(10000);
+    // sevenSegment.display3Digits(000);
+    // delay(10000);
+    // Serial.println("displaying 888");
+    // sevenSegment.display3Digits(888);
+    // delay(10000);
 
-    // Testing 1 digit write
-    sevenSegment.displayCharacter(0, 1);
-    delay(500);
-    sevenSegment.displayCharacter(1, 2);
-    delay(500);
-    sevenSegment.displayCharacter(1, 3);
+    // // Testing 1 digit write
+    // sevenSegment.displayCharacter(0, 1);
+    // delay(500);
+    // sevenSegment.displayCharacter(1, 2);
+    // delay(500);
+    // sevenSegment.displayCharacter(1, 3);
     
 }
