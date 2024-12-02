@@ -1,10 +1,11 @@
 #include <sevenSeg.hpp>
 
-// Function to select a digit using the demux
-void SevenSegmentDisplay::selectDigit(int digit) {
-  gpioExpander.digitalWrite(DEMUX_A, digit & 0x01);
-  gpioExpander.digitalWrite(DEMUX_B, (digit >> 1) & 0x01);
-  gpioExpander.digitalWrite(DEMUX_C, (digit >> 2) & 0x01);
+// Function to select a digit using the demux - active low since this is the cathode and we need to create a voltage drop from the anode
+// A0 = LSB of digit, A1 = second bit of digit
+void SevenSegmentDisplay::selectDigit(u_int8_t digit) {
+  gpioExpander.digitalWrite(SEVEN_SEG_GB, 0);
+  gpioExpander.digitalWrite(SEVEN_SEG_A0, digit & 0x01);
+  gpioExpander.digitalWrite(SEVEN_SEG_A1, (digit >> 1) & 0x01);
 }
 
 // Function to display a number on a specific digit

@@ -31,32 +31,31 @@
 
 
 
-// Adafruit_RA8875 adafruitTFT = Adafruit_RA8875(RA8875_CS, RA8875_RST);
-// TFT myTFT = TFT(adafruitTFT);
+Adafruit_RA8875 adafruitTFT(RA8875_CS, RA8875_RST);
+TFT myTFT(adafruitTFT);
 
-//Initialize variables for a timer
 Adafruit_MCP23X17 expander1;
 Adafruit_MCP23X17 expander2;
 
 Pin advancingPul = {ADVANCING_PUL, false};
 Pin advancingDir = {ADVANCING_DIR, false};
 Pin advancingEnable = {ADVANCING_ENA, true};
-Motor advancing = Motor(&expander2, advancingPul, advancingDir, advancingEnable, 100, "advancing");
+Motor advancing(&expander2, advancingPul, advancingDir, advancingEnable, 100, "advancing");
 
 Pin rotationPul = {ROTATION_PUL, false};
 Pin rotationDir = {ROTATION_DIR, false};
 Pin rotationEnable = {ROTATION_ENA, true};
-Motor tubeRotation = Motor(&expander2, rotationPul, rotationDir, rotationEnable, 100, "chuck rotation");
+Motor tubeRotation(&expander2, rotationPul, rotationDir, rotationEnable, 100, "chuck rotation");
 
 Pin dieClampPul = {DIE_CLAMP_PUL, false};
 Pin dieClampDir = {DIE_CLAMP_DIR, false};
 Pin dieClampEnable = {DIE_CLAMP_ENA, true};
-Motor dieClamp = Motor(&expander2, dieClampPul, dieClampDir, dieClampEnable, 500, "die clamp");
+Motor dieClamp(&expander2, dieClampPul, dieClampDir, dieClampEnable, 500, "die clamp");
 
 Pin chuckClampPul = {CHUCK_CLAMP_PUL, true};
 Pin chuckClampDir = {CHUCK_CLAMP_DIR, false};
 Pin chuckClampEnable = {CHUCK_CLAMP_ENA, true};
-Motor chuckClamp = Motor(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
+Motor chuckClamp(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
 
 
 
@@ -64,9 +63,9 @@ volatile int interruptCounter;
 volatile int encoderCount;
 // REncoder* encoder = nullptr;
 // REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
-// TODO: IDK IF THESE ARE THE RIGHT PINS
-ShiftRegister74HC595<1> shiftRegister = ShiftRegister74HC595<1>(SEVEN_SEG_SER, SEVEN_SEG_SRCLK, SEVEN_SEG_RCLK);
-SevenSegmentDisplay sevenSegment = SevenSegmentDisplay(shiftRegister, expander2, SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
+
+ShiftRegister74HC595<1> shiftRegister(SEVEN_SEG_SER, SEVEN_SEG_SRCLK, SEVEN_SEG_RCLK);
+SevenSegmentDisplay sevenSegment(shiftRegister, expander2, SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  

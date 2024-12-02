@@ -5,10 +5,10 @@
 #include <ShiftRegister74HC595.h>
 #include <Adafruit_MCP23X17.h>
 
-// Pins connected to the CD405xB (demultiplexer control)
-#define DEMUX_A 8
-#define DEMUX_B 9
-#define DEMUX_C 10
+// Pins connected to SN74LVC
+#define SEVEN_SEG_A0 0
+#define SEVEN_SEG_A1 1
+#define SEVEN_SEG_GB 2
 
 class SevenSegmentDisplay {
 public:
@@ -19,7 +19,7 @@ public:
         };
 
     // Function to select a digit using the demux
-    void selectDigit(int digit);
+    void selectDigit(u_int8_t digit);
 
     // Function to display a number on a specific digit
     void displayCharacter(int digit, int value);
@@ -37,17 +37,17 @@ public:
 
     // Segment map for common cathode display (BC56-12EWA)
     const uint8_t segmentMap[10] = {
-        0b00111111, // 0
-        0b00000110, // 1
-        0b01011011, // 2
-        0b01001111, // 3
-        0b01100110, // 4
-        0b01101101, // 5
-        0b01111101, // 6
-        0b00000111, // 7
-        0b01111111, // 8
-        0b01101111  // 9
-    };
+    0b11111100,  // 0
+    0b01100000,  // 1
+    0b11011010,  // 2
+    0b11110010,  // 3
+    0b01100110,  // 4
+    0b10110110,  // 5
+    0b10111110,  // 6
+    0b11100000,  // 7
+    0b11111110,  // 8
+    0b11110110   // 9
+  };
     ShiftRegister74HC595<1> shiftRegister;
 
     // Helper function to send data to the shift register
