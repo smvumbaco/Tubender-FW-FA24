@@ -64,11 +64,14 @@ class TubenderStateMachine {
         Mux mux1;
         Mux mux2;
 
-        Sensor breakBeamBehindChuck;
-        Sensor breakBeamBeforeDie;
-        Sensor limitSwitchStart;
-        Sensor limitSwitchEnd;
-        Sensor proximityOnChuck;
+        Sensor breakBeamBehindChuck; // Pin 4
+        Sensor breakBeamBeforeDie; // Pin 5
+        Sensor limitSwitchAdvance; // Pin 2
+        Sensor limitSwitchDie; // Pin 3
+        Sensor proximityOnChuck1; // Pin 9
+        Sensor proximityOnChuck2; // Pin 10
+        Sensor dieLimit1; // Pin 0
+        Sensor dieLimit2; // Pin 1
     public:
 
         // Constructor
@@ -87,7 +90,14 @@ class TubenderStateMachine {
         void finish();
 
         // List all of the methods for the class here
-        //static void handleBreakBeam
+        static void handleBreakBeamBehindChuckInterrupt();
+        static void handleBreakBeamBeforeDieInterrupt();
+        static void handleLimitSwitchStartInterrupt();
+        static void handleLimitSwitchEndInterrupt();
+        static void handleProximityOnChuckInterrupt();
+        static void handleDieLimit1Interrupt();
+        static void handleDieLimit2Interrupt();
+        static void handleProximityOnChuck2Interrupt();
 
 };
 

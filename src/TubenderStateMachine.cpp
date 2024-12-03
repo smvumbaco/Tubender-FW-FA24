@@ -8,13 +8,15 @@
 
 TubenderStateMachine::TubenderStateMachine() 
 : mux1(gpioExpander1, BUTTON_PLEX_1), mux2(gpioExpander1, BUTTON_PLEX_2),
-  breakBeamBehindChuck(21, "BreakBeam", "Behind Chuck"),
-  breakBeamBeforeDie(22, "BreakBeam", "Before Die Clamp"),
-  limitSwitchStart(19, "LimitSwitch", "Start of Range"),
-  limitSwitchEnd(18, "LimitSwitch", "End of Range"),
-  proximityOnChuck(23, "Proximity", "Front of Chuck") {}
-
-
+  breakBeamBehindChuck(DIE_BEAM, "BreakBeam", "Behind Chuck"),  // Pin 4
+  breakBeamBeforeDie(CHUCK_BEAM, "BreakBeam", "Before Die Clamp"),  // Pin 5
+  limitSwitchAdvance(ADVANCE_LIMIT_1, "LimitSwitch", "Start of Range"),  // Pin 2
+  limitSwitchDie(ADVANCE_LIMIT_2, "LimitSwitch", "End of Range"),  // Pin 3
+  proximityOnChuck1(INDUCTIVE_PROX_1, "Proximity", "Front of Chuck"),  // Pin 9
+  dieLimit1(DIE_LIMIT_1, "LimitSwitch", "Die Limit 1"),  // Pin 0
+  dieLimit2(DIE_LIMIT_2, "LimitSwitch", "Die Limit 2"),  // Pin 1
+  proximityOnChuck2(INDUCTIVE_PROX_2, "Proximity", "Front of Chuck 2")  // Pin 10
+{}
 TubenderStateMachine::~TubenderStateMachine() {
 
 }
@@ -62,9 +64,23 @@ void TubenderStateMachine::initializePins() {
     
     breakBeamBehindChuck.initialize();
     breakBeamBeforeDie.initialize();
-    limitSwitchStart.initialize(true);  // Enable pull-up for limit switches
-    limitSwitchEnd.initialize(true);   
-    proximityOnChuck.initialize();
+    limitSwitchAdvance.initialize(true);  // Enable pull-up for limit switches
+    limitSwitchDie.initialize(true);   
+    proximityOnChuck1.initialize();
+    proximityOnChuck2.initialize();
+    dieLimit1.initialize(true); 
+    dieLimit2.initialize(true);
+
+    // Enable the interrupts for all the sensors 
+    breakBeamBehindChuck.enableInterrupt(handleBreakBeamBehindChuckInterrupt);
+    breakBeamBeforeDie.enableInterrupt(handleBreakBeamBeforeDieInterrupt);
+    limitSwitchAdvance.enableInterrupt(handleLimitSwitchStartInterrupt);
+    limitSwitchDie.enableInterrupt(handleLimitSwitchEndInterrupt);
+    proximityOnChuck1.enableInterrupt(handleProximityOnChuckInterrupt);
+    dieLimit1.enableInterrupt(handleDieLimit1Interrupt);
+    dieLimit2.enableInterrupt(handleDieLimit2Interrupt);
+    proximityOnChuck2.enableInterrupt(handleProximityOnChuck2Interrupt);
+
     Serial.println("Sensors initialized.");
     // pinMode(LINEAR_POTENTIOMETER_PIN, INPUT);
 }
