@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <ShiftRegister74HC595.h>
+#include <Adafruit_MCP23X17.h>
 
 // Pins connected to the CD405xB (demultiplexer control)
 #define DEMUX_A 8
@@ -12,9 +13,10 @@
 class SevenSegmentDisplay {
 public:
   // Constructor
-     SevenSegmentDisplay(ShiftRegister74HC595<1> &sr, uint8_t data, uint8_t latch, uint8_t clock) 
-        : shiftRegister(sr), dataPin(data), latchPin(latch), clockPin(clock) {}
-
+     SevenSegmentDisplay(ShiftRegister74HC595<1> &sr, Adafruit_MCP23X17 &expander, uint8_t data, uint8_t latch, uint8_t clock) 
+        : shiftRegister(sr), gpioExpander(expander), dataPin(data), latchPin(latch), clockPin(clock) {
+          
+        };
 
     // Function to select a digit using the demux
     void selectDigit(int digit);
@@ -31,6 +33,7 @@ public:
     uint8_t dataPin;
     uint8_t latchPin;
     uint8_t clockPin;
+    Adafruit_MCP23X17 &gpioExpander;
 
     // Segment map for common cathode display (BC56-12EWA)
     const uint8_t segmentMap[10] = {

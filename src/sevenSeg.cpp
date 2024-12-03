@@ -2,9 +2,9 @@
 
 // Function to select a digit using the demux
 void SevenSegmentDisplay::selectDigit(int digit) {
-  digitalWrite(DEMUX_A, digit & 0x01);
-  digitalWrite(DEMUX_B, (digit >> 1) & 0x01);
-  digitalWrite(DEMUX_C, (digit >> 2) & 0x01);
+  gpioExpander.digitalWrite(DEMUX_A, digit & 0x01);
+  gpioExpander.digitalWrite(DEMUX_B, (digit >> 1) & 0x01);
+  gpioExpander.digitalWrite(DEMUX_C, (digit >> 2) & 0x01);
 }
 
 // Function to display a number on a specific digit
