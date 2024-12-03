@@ -17,7 +17,7 @@ private:
     int pin;               // GPIO pin where the sensor is connected
     String sensorType;     // Type of sensor
     String location;       // Location or purpose (e.g., "Behind Chuck", "End of Range")
-
+    bool isInterrupt;
 public:
     /**
      * @brief Constructor for the Sensor class.
@@ -50,6 +50,10 @@ public:
      * @return Location or purpose as a string.
      */
     String getLocation();
+
+    void enableInterrupt(void (*ISR)(void));
+
+    void disableInterrupt();
 };
 
 #endif // SENSOR_HPP

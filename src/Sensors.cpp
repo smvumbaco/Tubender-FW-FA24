@@ -4,7 +4,7 @@ using namespace std;
 
 // Constructor
 Sensor::Sensor(int pin, String sensorType, String location)
-    : pin(pin), sensorType(sensorType), location(location) {}
+    : pin(pin), sensorType(sensorType), location(location), isInterrupt(false) {}
 
 // Initializes the sensor by setting the pin mode
 void Sensor::initialize(bool pullup) {
@@ -29,3 +29,14 @@ String Sensor::getSensorType() {
 String Sensor::getLocation() {
     return location;
 }
+
+void Sensor::enableInterrupt(void (*ISR)(void)) {
+    attachInterrupt(digitalPinToInterrupt(pin), ISR, FALLING);
+    isInterrupt = true;
+}
+
+void Sensor::disableInterrupt(){
+    detachInterrupt(digitalPinToInterrupt(pin));
+    isInterrupt = false;
+}
+
