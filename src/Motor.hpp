@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include <string>
 #include <iostream>
+#include <Adafruit_MCP23X17.h>
 using namespace std;
 
 /**
@@ -22,20 +23,32 @@ using namespace std;
  * @param enaPin: The ENA+ pin used to enable/disable the motor functionality.
  */
 
+struct Pin {
+  int pin;
+  bool onExpander;
+};
 
 class Motor {
   private:
-    int stepPin;
-    int dirPin;
-    int enaPin; // maybe??
+    Adafruit_MCP23X17 *expander;
+    bool onExpander[3];
+    Pin stepPin;
+    Pin dirPin;
+    Pin enaPin; // maybe??
     int stepDelay;
     String motorID;
   
 
   public:
 
-    Motor(int sPin, int dPin, int delay, String id);
-      
+    Motor(Adafruit_MCP23X17 *gpioExpander, Pin pulPin, Pin dPin, Pin enPin, int delay, String id);
+
+    void setPulPin(Pin pulPin);
+
+    void setDirPin(Pin dirPin);
+
+    void setEnaPin(Pin enaPin);
+
     void setDirection(bool clockwise);
 
     void moveSteps(int steps);

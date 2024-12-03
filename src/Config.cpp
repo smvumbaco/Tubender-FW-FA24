@@ -16,6 +16,7 @@ Config::Config(double initTubeLength)
 // @param newBendLength(double, optional) Length of new bend. Used in offset bends.
 int Config::addNewBend(string newBendType, int bendNum, double newBendAngle, double newBendHeight, double newBendLength = 0.0) 
 {
+    // TODO correlate bend angle with length of tube taken up
     if (tubeLength - newBendHeight - newBendLength < 0.0)
     {
         return -1;
