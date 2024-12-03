@@ -1,4 +1,4 @@
-#include "Sensors.hpp"
+#include "Sensor.hpp"
 #include <Arduino.h>
 using namespace std;
 

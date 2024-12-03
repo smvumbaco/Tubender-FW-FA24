@@ -33,7 +33,7 @@
 #define BENDING_R_ENA 7
 
 //GPB
-#define INDUCTIVE_PROX_1 9
+#define INDUCTIVE_S_1 9
 #define INDUCTIVE_PROX_2 10
 #define DISPLAY_WAIT 11
 #define DISPLAY_INT 12
@@ -45,6 +45,8 @@
 //Include libraries
 #include "Mux.hpp"
 #include "Config.hpp"
+#include "Sensor.hpp"
+
 // Constant Variables
 const float gravity = 9.81; //this is just an example, delete this if/when we have a real variable
 const double angleToStepsChuck = 10.0; //const that converts angle value to steps
