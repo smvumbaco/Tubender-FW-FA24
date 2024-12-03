@@ -1,41 +1,18 @@
 #include "TubenderStateMachine.hpp"
 #include <tft.hpp>
 #include <Arduino.h>
-#include "REncoder.hpp"
-#include "RotaryEncoder.h"
-#include "Adafruit_MCP23X17.h"
-#include "Motor.hpp"
-#include "Mux.hpp"
-#include "sevenSeg.hpp"
+
 // #include <Adafruit_RA8875.h>
 
 #define RA8875_CS  5   // Chip select pin
 #define RA8875_RST 4   // Reset pin
 // Pins on main board
-#define CHUCK_CLAMP_DIR 4
-#define DISPLAY_CS 5
-#define DIE_CLAMP_PUL 12
-#define DIE_CLAMP_DIR 13
-#define BENDING_RPWM 14
-#define BENDING_LPWM 15
-#define ADVANCING_PUL 16
-#define ADVANCING_DIR 17
-#define DISPLAY_SCK 18
-#define DISPLAY_MISO 23
-#define SEVEN_SEG_SER 25
-#define SEVEN_SEG_SRCLK 26
-#define SEVEN_SEG_RCLK 12
-#define ROTATION_DIR 32
-#define ROTATION_PUL 33
-
-
-
+Adafruit_MCP23X17 expander1;
+Adafruit_MCP23X17 expander2;
 
 Adafruit_RA8875 adafruitTFT(RA8875_CS, RA8875_RST);
 TFT myTFT(adafruitTFT);
 
-Adafruit_MCP23X17 expander1;
-Adafruit_MCP23X17 expander2;
 
 Pin advancingPul = {ADVANCING_PUL, false};
 Pin advancingDir = {ADVANCING_DIR, false};
@@ -56,7 +33,6 @@ Pin chuckClampPul = {CHUCK_CLAMP_PUL, true};
 Pin chuckClampDir = {CHUCK_CLAMP_DIR, false};
 Pin chuckClampEnable = {CHUCK_CLAMP_ENA, true};
 Motor chuckClamp(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
-
 
 
 volatile int interruptCounter;
@@ -93,45 +69,12 @@ void setup() {
     Serial.begin(115200);
     while (!Serial)
         ;
-    pinMode(SEVEN_SEG_SER, OUTPUT);
-    pinMode(SEVEN_SEG_SRCLK, OUTPUT);
-    pinMode(SEVEN_SEG_RCLK, OUTPUT);
 
     expander1.begin_I2C(0x20);
     delayMicroseconds(1000);
-    expander1.pinMode(BUTTON_PLEX_1, INPUT);
-    expander1.pinMode(BUTTON_SEL_1A, OUTPUT);
-    expander1.pinMode(BUTTON_SEL_1B, OUTPUT);
-    expander1.pinMode(BUTTON_SEL_1C, OUTPUT);
-    expander1.pinMode(BUTTON_PLEX_2, INPUT);
-    expander1.pinMode(BUTTON_SEL_2A, OUTPUT);
-    expander1.pinMode(BUTTON_SEL_2B, OUTPUT);
-    expander1.pinMode(BUTTON_SEL_2C, OUTPUT);
-    expander1.pinMode(DIE_LIMIT_1, INPUT);
-    expander1.pinMode(DIE_LIMIT_2, INPUT);
-
-    //tests for rencoder
-    expander1.setupInterrupts(false, false, LOW);
-    expander1.pinMode(DIAL_CHANNEL_A, INPUT_PULLUP);
-    expander1.setupInterruptPin(DIAL_CHANNEL_A, LOW);
-    expander1.pinMode(DIAL_CHANNEL_B, INPUT_PULLUP);
-    expander1.setupInterruptPin(DIAL_CHANNEL_B, LOW);
-    Serial.println("Expander 1 Done");
-    
-    
     expander2.begin_I2C(0x21);
     delayMicroseconds(1000);
-    expander2.pinMode(INDUCTIVE_PROX_1, INPUT);
-    expander2.pinMode(INDUCTIVE_PROX_2, INPUT);
-    expander2.pinMode(DISPLAY_WAIT, OUTPUT);
-    expander2.pinMode(DISPLAY_INT, OUTPUT);
-    expander2.pinMode(SEVEN_SEG_A0, OUTPUT);
-    expander2.pinMode(SEVEN_SEG_A1, OUTPUT);
-    expander2.pinMode(SEVEN_SEG_GB, OUTPUT);
-    expander2.pinMode(SEVEN_SEG_OEB, OUTPUT);
-    expander2.pinMode(BENDING_L_ENA, OUTPUT);
-    expander2.pinMode(BENDING_R_ENA, OUTPUT);
-    
+
     Serial.println("Expander 2 Done");
     Serial.println("Done with setup");
     // myTFT.initialize();
