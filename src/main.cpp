@@ -10,7 +10,7 @@
 // #include <Adafruit_RA8875.h>
 
 #define RA8875_CS  5   // Chip select pin
-#define RA8875_RST 4   // Reset pin
+#define RA8875_RST 4   // Reset pin (Not correct)
 // Pins on main board
 #define CHUCK_CLAMP_DIR 4
 #define DISPLAY_CS 5
@@ -31,8 +31,8 @@
 
 
 
-// Adafruit_RA8875 adafruitTFT = Adafruit_RA8875(RA8875_CS, RA8875_RST);
-// TFT myTFT = TFT(adafruitTFT);
+Adafruit_RA8875 adafruitTFT = Adafruit_RA8875(DISPLAY_CS, DISPLAY_INT);
+
 
 //Initialize variables for a timer
 Adafruit_MCP23X17 expander1 = Adafruit_MCP23X17();
@@ -58,7 +58,7 @@ Pin chuckClampDir = {CHUCK_CLAMP_DIR, false};
 Pin chuckClampEnable = {CHUCK_CLAMP_ENA, true};
 Motor chuckClamp = Motor(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
 
-
+TFT myTFT = TFT(adafruitTFT, &expander2);
 
 volatile int interruptCounter;
 volatile int encoderCount;
@@ -115,9 +115,14 @@ void setup() {
     expander2.pinMode(BENDING_L_ENA, OUTPUT);
     expander2.pinMode(BENDING_R_ENA, OUTPUT);
     
+    
+    
     Serial.println("Expander 2 Done");
     Serial.println("Done with setup");
-    // myTFT.initialize();
+    Serial.println("Intialize Display now");
+    myTFT.initialize();
+    Serial.println("Display Start Menu now ");
+    myTFT.displayStartMenu();
 
 }
 
@@ -137,52 +142,6 @@ void loop() {
     // Serial.println("rotation moving 20 steps"); 
     // tubeRotation.moveForward(20);
 
-    // myTFT.displayStartMenu();
-<<<<<<< HEAD
-=======
-    // if (interruptCounter > 0) {
-    //     Serial.println("interrupt detected");
-
-    //     portENTER_CRITICAL_ISR(&timerMux);
-    //     encoderCount = encoder.getPosition();
-    //     interruptCounter--;
-    //     portEXIT_CRITICAL_ISR(&timerMux);
-    //     sevenSegment.displayCharacter(0, encoderCount);
-    // }
->>>>>>> c1d779f149a5d9eed3d7c2fc904217bcc0a18f01
-
-    //Seven Segment Test Code:
-
-    //  Testing 3 Digit write
-<<<<<<< HEAD
-    //sevenSegment.display3Digits(000)
-    //delay(1000);
-    //sevenSegment.display3Digits(888)
-    //delay(1000);
-
-    // Testing 1 digit write
-    //sevenSegment.displayCharacter(0, 1);
-    //delay(500);
-    //sevenSegment.displayCharacter(1, 2);
-    //delay(500);
-    //sevenSegment.displayCharacter(1, 3);
-
-
-=======
-    Serial.println("displaying 000");
-
-    sevenSegment.display3Digits(000);
-    delay(10000);
-    Serial.println("displaying 888");
-    sevenSegment.display3Digits(888);
-    delay(10000);
-
-    // Testing 1 digit write
-    sevenSegment.displayCharacter(0, 1);
-    delay(500);
-    sevenSegment.displayCharacter(1, 2);
-    delay(500);
-    sevenSegment.displayCharacter(1, 3);
->>>>>>> c1d779f149a5d9eed3d7c2fc904217bcc0a18f01
+    // 
     
 }

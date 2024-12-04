@@ -1,6 +1,11 @@
 #include <tft.hpp>
+#define RA8875_RST 12
 
 void TFT::initialize() {
+    expander->digitalWrite(RA8875_RST, LOW);
+    delay(100);
+    expander->digitalWrite(RA8875_RST, HIGH);
+    delay(100);
     if (!TFT::tft.begin(RA8875_800x480)) {
         Serial.println("RA8875 not found ... check wiring?");
         while (1);

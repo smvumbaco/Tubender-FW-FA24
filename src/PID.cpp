@@ -49,7 +49,7 @@ void PID::prepareHome(){
 
 // Runs the linear actuator by regularly updating the output of the PID controller based on the sensor input and setpoint value
 void PID::run(){
-
+    /*
     continueBend = true;
 
     while (continueBend == true) {
@@ -157,16 +157,19 @@ void PID::run(){
             }
         }
     }
+    */
 }
 
 
 // Stops the linear actuator
 void PID::stop() {
+    /*
     gpioExpander.digitalWrite(BENDING_L_ENA, LOW);
     gpioExpander.digitalWrite(BENDING_R_ENA, LOW);
     analogWrite(BENDING_LPWM, 0);
     analogWrite(BENDING_RPWM, 0);  
     continueBend = false;  
+    */
 }
 
 

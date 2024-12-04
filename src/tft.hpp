@@ -2,11 +2,12 @@
 #define TFT_CLASS
 
 #include <Adafruit_RA8875.h>
+#include "Adafruit_MCP23X17.h"
 #include <SD.h>
 
 class TFT {
   public:
-    TFT(Adafruit_RA8875 &display) : tft(display) {}
+    TFT(Adafruit_RA8875 &display, Adafruit_MCP23X17 *gpioExpander) : tft(display), expander(gpioExpander) {}
 
     //Intialize TFT
     void initialize();
@@ -33,6 +34,7 @@ class TFT {
 
   private:
     Adafruit_RA8875 &tft;
+    Adafruit_MCP23X17 *expander;
 };
 
 #endif
