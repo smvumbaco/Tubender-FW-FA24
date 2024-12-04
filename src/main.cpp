@@ -56,6 +56,15 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 volatile bool dialChannelAInterrupt = false;
 volatile bool dialChannelBInterrupt = false;
 
+volatile bool sensorStateChanged = false;
+volatile unsigned long lastInterruptTime = 0;
+
+
+// State machine
+TubenderStateMachine stateMachine(expander1, expander2);
+
+
+// Rotary Encoder ISRs
 void IRAM_ATTR handleDialChannelAInterrupt() {
     dialChannelAInterrupt = true;
 }
@@ -64,6 +73,67 @@ void IRAM_ATTR handleDialChannelBInterrupt() {
     dialChannelBInterrupt = true;
 }
 
+
+// Sensor ISRs
+void IRAM_ATTR ISR_bbsensor1() {
+    sensorStateChanged = true;
+}
+
+void IRAM_ATTR ISR_bbsensor2() {
+    sensorStateChanged = true;
+}
+
+void IRAM_ATTR ISR_proximity1() {
+    sensorStateChanged = true;
+}
+
+void IRAM_ATTR ISR_proximity2() {
+    sensorStateChanged = true;
+}
+
+void IRAM_ATTR ISR_advancingLimit1() {
+    static unsigned long lastInterruptTime = 0; // Static variable to persist between calls
+    unsigned long currentTime = micros(); // Use micros instead of millis
+
+    if (currentTime - lastInterruptTime > 50000) { // 50ms debounce in microseconds
+        lastInterruptTime = currentTime;
+        sensorStateChanged = true;
+        // Do minimal work here
+    }
+}
+
+void IRAM_ATTR ISR_advancingLimit2() {
+    static unsigned long lastInterruptTime = 0; // Static variable to persist between calls
+    unsigned long currentTime = micros(); // Use micros instead of millis
+
+    if (currentTime - lastInterruptTime > 50000) { // 50ms debounce in microseconds
+        lastInterruptTime = currentTime;
+        sensorStateChanged = true;
+        // Do minimal work here
+    }
+}
+
+void IRAM_ATTR ISR_bendLimit1() {
+    static unsigned long lastInterruptTime = 0; // Static variable to persist between calls
+    unsigned long currentTime = micros(); // Use micros instead of millis
+
+    if (currentTime - lastInterruptTime > 50000) { // 50ms debounce in microseconds
+        lastInterruptTime = currentTime;
+        sensorStateChanged = true;
+        // Do minimal work here
+    }
+}
+
+void IRAM_ATTR ISR_bendLimit2() {
+    static unsigned long lastInterruptTime = 0; // Static variable to persist between calls
+    unsigned long currentTime = micros(); // Use micros instead of millis
+
+    if (currentTime - lastInterruptTime > 50000) { // 50ms debounce in microseconds
+        lastInterruptTime = currentTime;
+        sensorStateChanged = true;
+        // Do minimal work here
+    }
+}
 
 void setup() {
     Serial.begin(115200);
@@ -100,6 +170,11 @@ void loop() {
         bool b_state = (state>>7) & 0x1;
         Serial.printf("dial channel a = %d, dial channel b = %d\n", a_state, b_state);
         expander1.clearInterrupts();
+    }
+
+    if (sensorStateChanged) {
+        sensorStateChanged = false;
+        Serial.println("Sensor state changed.");
     }
     
     // Serial.println("advancing moving 20 steps");

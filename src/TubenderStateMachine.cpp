@@ -1,16 +1,26 @@
 #include "TubenderStateMachine.hpp"
-
+#include <Arduino.h>
 
 
 volatile bool buttonPress;
 
+extern void IRAM_ATTR ISR_bbsensor1();
+extern void IRAM_ATTR ISR_bbsensor2();
+extern void IRAM_ATTR ISR_proximity1();
+extern void IRAM_ATTR ISR_proximity2();
+extern void IRAM_ATTR ISR_advancingLimit1();
+extern void IRAM_ATTR ISR_advancingLimit2();
+extern void IRAM_ATTR ISR_bendLimit1();
+extern void IRAM_ATTR ISR_bendLimit2();
 
 void IRAM_ATTR buttonPressedInterrupt() {
     buttonPress = true;
 }
 
-TubenderStateMachine::TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2) : gpioExpander1(expander1), gpioExpander2(expander2), mux1(gpioExpander1, BUTTON_PLEX_1, BUTTON_SEL_1A, BUTTON_SEL_1B, BUTTON_SEL_1C), mux2(gpioExpander1, BUTTON_PLEX_2, BUTTON_SEL_2A, BUTTON_SEL_2B, BUTTON_SEL_2C) {
-    
+TubenderStateMachine::TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2) 
+: gpioExpander1(expander1), gpioExpander2(expander2), 
+  mux1(gpioExpander1, BUTTON_PLEX_1, BUTTON_SEL_1A, BUTTON_SEL_1B, BUTTON_SEL_1C),
+  mux2(gpioExpander1, BUTTON_PLEX_2, BUTTON_SEL_2A, BUTTON_SEL_2B, BUTTON_SEL_2C) {
 }
 
 TubenderStateMachine::~TubenderStateMachine() {
@@ -83,6 +93,29 @@ void TubenderStateMachine::initializePins() {
 
     gpioExpander2.begin_I2C(0x21);
     delay(10);
+
+    // Sensor Setup
+    pinMode(CHUCK_BEAM, INPUT_PULLUP);  // Break Beam Sensor before chuck
+    pinMode(DIE_BEAM, INPUT_PULLUP);    // Break Beam Sensor before die
+    pinMode(INDUCTIVE_S_1, INPUT_PULLUP); // Proximity Sensor 1
+    pinMode(INDUCTIVE_S_2, INPUT_PULLUP); // Proximity Sensor 2
+    pinMode(ADVANCE_LIMIT_1, INPUT_PULLUP); // Advancing Limit Switch 1
+    pinMode(ADVANCE_LIMIT_2, INPUT_PULLUP); // Advancing Limit Switch 2
+    pinMode(DIE_LIMIT_1, INPUT_PULLUP);     // Bending Limit Switch 1
+    pinMode(DIE_LIMIT_2, INPUT_PULLUP);     // Bending Limit Switch 2
+
+
+    // Attach interrupts for sensors
+    attachInterrupt(digitalPinToInterrupt(CHUCK_BEAM), ISR_bbsensor1, FALLING);
+    attachInterrupt(digitalPinToInterrupt(DIE_BEAM), ISR_bbsensor2, FALLING);
+    attachInterrupt(digitalPinToInterrupt(INDUCTIVE_S_1), ISR_proximity1, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(INDUCTIVE_S_2), ISR_proximity2, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(ADVANCE_LIMIT_1), ISR_advancingLimit1, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(ADVANCE_LIMIT_2), ISR_advancingLimit2, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(DIE_LIMIT_1), ISR_bendLimit1, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(DIE_LIMIT_2), ISR_bendLimit2, CHANGE);
+
+    Serial.println("Pins initialized.");
     
 }
 
