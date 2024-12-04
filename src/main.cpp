@@ -2,16 +2,15 @@
 #include <tft.hpp>
 #include <Arduino.h>
 
-// #include <Adafruit_RA8875.h>
+#include <Adafruit_RA8875.h>
 
-#define RA8875_CS  5   // Chip select pin
-#define RA8875_RST 4   // Reset pin
+
 // Pins on main board
 Adafruit_MCP23X17 expander1;
 Adafruit_MCP23X17 expander2;
 
-Adafruit_RA8875 adafruitTFT(RA8875_CS, RA8875_RST);
-TFT myTFT(adafruitTFT);
+
+
 
 
 Pin advancingPul = {ADVANCING_PUL, false};
@@ -34,6 +33,10 @@ Pin chuckClampDir = {CHUCK_CLAMP_DIR, false};
 Pin chuckClampEnable = {CHUCK_CLAMP_ENA, true};
 Motor chuckClamp(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
 
+#define RA8875_CS  5   // Chip select pin
+#define RA8875_RST 12   // Reset pin
+Adafruit_RA8875 adafruitTFT(RA8875_CS, RA8875_RST);
+TFT myTFT(adafruitTFT, &expander2);
 
 volatile int interruptCounter;
 volatile int encoderCount;
