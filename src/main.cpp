@@ -18,7 +18,7 @@ void setup() {
 }
 
 void loop() {
-    
+    Serial.println("moving");
     BendingPID.prepareNewBend(45);
     BendingPID.run();
     delay(5000);
