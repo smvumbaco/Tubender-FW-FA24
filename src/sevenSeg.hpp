@@ -15,7 +15,6 @@ public:
   // Constructor
      SevenSegmentDisplay(ShiftRegister74HC595<1> &sr, Adafruit_MCP23X17 &expander, uint8_t data, uint8_t latch, uint8_t clock) 
         : shiftRegister(sr), gpioExpander(expander), dataPin(data), latchPin(latch), clockPin(clock) {
-          
         };
 
     // Function to select a digit using the demux
@@ -48,7 +47,7 @@ public:
     0b11111110,  // 8
     0b11110110   // 9
   };
-    ShiftRegister74HC595<1> shiftRegister;
+    ShiftRegister74HC595<1> &shiftRegister;
 
     // Helper function to send data to the shift register
     void shiftOutData(uint8_t data);
