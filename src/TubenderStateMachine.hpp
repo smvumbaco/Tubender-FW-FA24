@@ -23,21 +23,21 @@
 #define DIAL_CHANNEL_A 27
 #define DIAL_CHANNEL_B 28
 
-#define INDUCTIVE_PROX_1 2
-#define INDUCTIVE_PROX_2 3
-#define DISPLAY_WAIT 4
-#define DISPLAY_INT 5
-#define DIE_CLAMP_ENA_POS 6
-#define ROTATION_ENA_POS 7
-#define ADVANCING_ENA_POS 8
-#define SEVEN_SEG_A0 21
-#define SEVEN_SEG_A1 22
-#define SEVEN_SEG_GB 23
-#define SEVEN_SEG_OEB 24
-#define CHUCK_CLAMP_ENA_POS 25
-#define CHUCK_CLAMP_PUL_POS 26
-#define BENDING_L_ENA 27
-#define BENDING_R_ENA 28
+#define INDUCTIVE_PROX_1 9
+#define INDUCTIVE_PROX_2 10
+#define DISPLAY_WAIT 11
+#define DISPLAY_INT 12
+#define DIE_CLAMP_ENA_POS 13
+#define ROTATION_ENA_POS 14
+#define ADVANCING_ENA_POS 15
+#define SEVEN_SEG_A0 0
+#define SEVEN_SEG_A1 1
+#define SEVEN_SEG_GB 2
+#define SEVEN_SEG_OEB 3
+#define CHUCK_CLAMP_ENA_POS 4
+#define CHUCK_CLAMP_PUL_POS 5
+#define BENDING_L_ENA 6
+#define BENDING_R_ENA 7
 
 //Include libraries
 #include "Mux.hpp"
