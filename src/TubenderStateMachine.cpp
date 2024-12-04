@@ -9,7 +9,7 @@ void IRAM_ATTR buttonPressedInterrupt() {
     buttonPress = true;
 }
 
-TubenderStateMachine::TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2) : gpioExpander1(expander1), gpioExpander2(expander2), mux1(gpioExpander1, BUTTON_PLEX_1, BUTTON_SEL_1A, BUTTON_SEL_1B, BUTTON_SEL_1C), mux2(gpioExpander1, BUTTON_PLEX_2, BUTTON_SEL_2A, BUTTON_SEL_2B, BUTTON_SEL_2C) {
+TubenderStateMachine::TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2, TFT &tft) : gpioExpander1(expander1), gpioExpander2(expander2), tft_display(tft), mux1(gpioExpander1, BUTTON_PLEX_1, BUTTON_SEL_1A, BUTTON_SEL_1B, BUTTON_SEL_1C), mux2(gpioExpander1, BUTTON_PLEX_2, BUTTON_SEL_2A, BUTTON_SEL_2B, BUTTON_SEL_2C) {
     
 }
 
@@ -91,12 +91,15 @@ void TubenderStateMachine::reset() {
 }
 
 void TubenderStateMachine::start() {
-    
-    //after getting initial tube length
+    // after getting initial tube length
     // double initialLength = 240.0;
     // Config tubeConfig(initialLength);
     // tubeConfig.addNewBend("offset", 0, 22.5, 10, 15);
     // Serial.print(tubeConfig.tubeLength);
+    tft_display.displayStartMenu();
+    while (!mux1.readButton(0))
+        ;
+    
 }
 
 void TubenderStateMachine::bend() {
