@@ -67,6 +67,7 @@
 //Include libraries
 #include "Mux.hpp"
 #include "Config.hpp"
+#include "tft.hpp"
 #include "REncoder.hpp"
 #include "REncoder.hpp"
 #include "RotaryEncoder.h"
@@ -90,12 +91,13 @@ class TubenderStateMachine {
         enum States _currentState;
         Adafruit_MCP23X17 &gpioExpander1;
         Adafruit_MCP23X17 &gpioExpander2;
+        TFT &tft_display;
         Mux mux1;
         Mux mux2;
     public:
 
         // Constructor
-        TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2);
+        TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2, TFT &tft);
         //TubenderStateMachine(put expander parameter(s) in here);
 
         ~TubenderStateMachine();
