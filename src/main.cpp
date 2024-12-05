@@ -43,8 +43,8 @@ volatile int encoderCount;
 // REncoder* encoder = nullptr;
 // REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
 
-ShiftRegister74HC595<1> shiftRegister(SEVEN_SEG_SER, SEVEN_SEG_SRCLK, SEVEN_SEG_RCLK);
-SevenSegmentDisplay sevenSegment(shiftRegister, expander2, SEVEN_SEG_SER, SEVEN_SEG_RCLK, SEVEN_SEG_SRCLK);
+Adafruit_7segment matrix = Adafruit_7segment();
+SevenSegmentDisplay sevenSegment(matrix);
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
@@ -64,7 +64,7 @@ volatile unsigned long lastInterruptTime = 0;
 
 
 // State machine
-TubenderStateMachine stateMachine(expander1, expander2);
+TubenderStateMachine stateMachine(expander1, expander2, myTFT);
 
 
 // Rotary Encoder ISRs
@@ -150,78 +150,12 @@ void setup() {
 
     Serial.println("Expander 2 Done");
     Serial.println("Done with setup");
-    // myTFT.initialize();
 
 }
 
 void loop() {
-    if (dialChannelAInterrupt) {
-        Serial.println("channel a interrupt");
-        dialChannelAInterrupt = false;
-        u_int16_t state = expander1.getCapturedInterrupt();
-        bool a_state = (state>>6) & 0x1;
-        bool b_state = (state>>7) & 0x1;
-        Serial.printf("dial channel a = %d, dial channel b = %d\n", a_state, b_state);
-        expander1.clearInterrupts();
-    }
+    //Integrating Rotary Encoder and 7-Seg
 
-    if (dialChannelBInterrupt) {
-        Serial.println("channel b interrupt");
-        dialChannelBInterrupt = false;
-        u_int16_t state = expander1.getCapturedInterrupt();
-        bool a_state = (state>>6) & 0x1;
-        bool b_state = (state>>7) & 0x1;
-        Serial.printf("dial channel a = %d, dial channel b = %d\n", a_state, b_state);
-        expander1.clearInterrupts();
-    }
 
-    if (sensorStateChanged) {
-        sensorStateChanged = false;
-        Serial.println("Sensor state changed.");
-    }
-    
-    // Serial.println("advancing moving 20 steps");
-    // advancing.moveForward(20);
 
-    // delay(1000);
-    // Serial.println("chuck clamp moving 20 steps");
-    // chuckClamp.moveForward(20);
-
-    // delay(1000);
-    // Serial.println("die clamp moving 20 steps");
-    // dieClamp.moveForward(20);
-
-    // delay(1000);
-    // Serial.println("rotation moving 20 steps"); 
-    // tubeRotation.moveForward(20);
-
-    // myTFT.displayStartMenu();
-    // if (interruptCounter > 0) {
-    //     Serial.println("interrupt detected");
-
-    //     portENTER_CRITICAL_ISR(&timerMux);
-    //     encoderCount = encoder.getPosition();
-    //     interruptCounter--;
-    //     portEXIT_CRITICAL_ISR(&timerMux);
-    //     sevenSegment.displayCharacter(0, encoderCount);
-    // }
-
-    //Seven Segment Test Code:
-
-    // //  Testing 3 Digit write
-    // Serial.println("displaying 000");
-
-    // sevenSegment.display3Digits(000);
-    // delay(10000);
-    // Serial.println("displaying 888");
-    // sevenSegment.display3Digits(888);
-    // delay(10000);
-
-    // // Testing 1 digit write
-    // sevenSegment.displayCharacter(0, 1);
-    // delay(500);
-    // sevenSegment.displayCharacter(1, 2);
-    // delay(500);
-    // sevenSegment.displayCharacter(1, 3);
-    
 }

@@ -1,27 +1,54 @@
 #include <sevenSeg.hpp>
 
-// Function to select a digit using the demux - active low since this is the cathode and we need to create a voltage drop from the anode
-// A0 = LSB of digit, A1 = second bit of digit
-void SevenSegmentDisplay::selectDigit(u_int8_t digit) {
-  gpioExpander.digitalWrite(SEVEN_SEG_GB, 0);
-  gpioExpander.digitalWrite(SEVEN_SEG_A0, digit & 0x01);
-  gpioExpander.digitalWrite(SEVEN_SEG_A1, (digit >> 1) & 0x01);
+const int maxTube = 100;
+const int maxAdvancement = 100;
+const int maxLength = 100;
+const int maxHeight = 100;
+
+
+void SevenSegmentDisplay::intialize(int address) {
+  sevenSeg.begin(address);
 }
 
 // Function to display a number on a specific digit
-void SevenSegmentDisplay::displayCharacter(int digit, int value) {
-  selectDigit(digit);                    // Select the digit (via demux)
-  uint8_t data = segmentMap[value];      // Get segment data for the value
-  shiftRegister.setAll(&data);            // Send data to the shift register
+void SevenSegmentDisplay::displayDecimalValue(int value) {
+  sevenSeg.print(value, DEC);
+  sevenSeg.writeDisplay();
+  delay(500);
 }
 
-void SevenSegmentDisplay::display3Digits(int value) {
-    // Extract and display each digit individually
-    for (int digitNum = 0; digitNum < 3; digitNum++) {
-        int digitValue = (value / (int)pow(10, 2 - digitNum)) % 10; // Extract digit
-        displayCharacter(digitNum, digitValue); // Display digit on its corresponding segment
-        delay(5); // Small delay for multiplexing
+void SevenSegmentDisplay::displayTubeLength(int value) {
+  displayDecimalValue(value % maxTube);
+}
+
+void SevenSegmentDisplay::displayAdvancement(int value) {
+  displayDecimalValue(value % maxAdvancement);
+}
+
+void SevenSegmentDisplay::displayHeight(int value) {
+  displayDecimalValue(value % maxHeight);
+}
+void SevenSegmentDisplay::displayLength(int value) {
+  displayDecimalValue(value % maxLength);
+}
+
+void SevenSegmentDisplay::displayAngle(int value) {
+      //May have errors with handeling negative values passed
+      switch (value % 4) {
+        case 0:
+            displayDecimalValue(0);
+            break;
+        case 1:
+            displayDecimalValue(22.5);
+            break;
+        case 2:
+            displayDecimalValue(45);
+            break;
+        case 3:
+            displayDecimalValue(90);
+            break;
     }
 }
+
 
 

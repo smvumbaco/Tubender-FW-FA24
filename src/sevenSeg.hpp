@@ -2,37 +2,31 @@
 #define SEVENSEGMENTDISPLAY_HPP
 
 #include <Arduino.h>
-#include <ShiftRegister74HC595.h>
 #include <Adafruit_MCP23X17.h>
+#include <Adafruit_GFX.h>
+#include "Adafruit_LEDBackpack.h"
 
 // Pins connected to SN74LVC
-#define SEVEN_SEG_A0 0
-#define SEVEN_SEG_A1 1
-#define SEVEN_SEG_GB 2
+#define SEVEN_SEG_DT 0
+#define SEVEN_SEG_CLK 1
 
 class SevenSegmentDisplay {
 public:
   // Constructor
-     SevenSegmentDisplay(ShiftRegister74HC595<1> &sr, Adafruit_MCP23X17 &expander, uint8_t data, uint8_t latch, uint8_t clock) 
-        : shiftRegister(sr), gpioExpander(expander), dataPin(data), latchPin(latch), clockPin(clock) {
+     SevenSegmentDisplay( Adafruit_7segment seg ) 
+        : sevenSeg(seg)  {
         };
-
-    // Function to select a digit using the demux
-    void selectDigit(u_int8_t digit);
-
+    void intialize(int address);
     // Function to display a number on a specific digit
-    void displayCharacter(int digit, int value);
-
-    void display3Digits(int value);
-
-    // Function to clear the display
-    void clearDisplay();
+    void displayTubeLength(int value);
+    void displayAdvancement(int value);
+    void displayDecimalValue(int value);
+    void displayAngle(int value);
+    void displayHeight(int value);
+    void displayLength(int value);
 
   private:
-    uint8_t dataPin;
-    uint8_t latchPin;
-    uint8_t clockPin;
-    Adafruit_MCP23X17 &gpioExpander;
+    Adafruit_7segment sevenSeg;
 
     // Segment map for common cathode display (BC56-12EWA)
     const uint8_t segmentMap[10] = {
@@ -47,10 +41,6 @@ public:
     0b11111110,  // 8
     0b11110110   // 9
   };
-    ShiftRegister74HC595<1> &shiftRegister;
-
-    // Helper function to send data to the shift register
-    void shiftOutData(uint8_t data);
 
 };
 
