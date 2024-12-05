@@ -41,10 +41,11 @@ TFT myTFT(adafruitTFT, &expander2);
 volatile int interruptCounter;
 volatile int encoderCount;
 // REncoder* encoder = nullptr;
-// REncoder encoder = REncoder(expander1, DIAL_CHANNEL_A, DIAL_CHANNEL_B, RotaryEncoder::LatchMode::FOUR3);
+REncoder encoder(expander1, DIAL_DATA, DIAL_CLK);
 
 Adafruit_7segment matrix = Adafruit_7segment();
 SevenSegmentDisplay sevenSegment(matrix);
+
 hw_timer_t * timer = NULL;
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
  
@@ -56,7 +57,6 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 //     portEXIT_CRITICAL_ISR(&timerMux);
 // }
 
-volatile bool dialChannelAInterrupt = false;
 volatile bool dialChannelBInterrupt = false;
 
 volatile bool sensorStateChanged = false;
@@ -64,17 +64,10 @@ volatile unsigned long lastInterruptTime = 0;
 
 
 // State machine
-TubenderStateMachine stateMachine(expander1, expander2, myTFT);
+TubenderStateMachine stateMachine(expander1, expander2, myTFT, encoder);
 
 
-// Rotary Encoder ISRs
-void IRAM_ATTR handleDialChannelAInterrupt() {
-    dialChannelAInterrupt = true;
-}
 
-void IRAM_ATTR handleDialChannelBInterrupt() {
-    dialChannelBInterrupt = true;
-}
 
 
 // Sensor ISRs
@@ -93,6 +86,7 @@ void IRAM_ATTR ISR_proximity1() {
 void IRAM_ATTR ISR_proximity2() {
     sensorStateChanged = true;
 }
+
 
 void IRAM_ATTR ISR_advancingLimit1() {
     static unsigned long lastInterruptTime = 0; // Static variable to persist between calls

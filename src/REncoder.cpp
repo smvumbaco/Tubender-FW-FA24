@@ -1,33 +1,43 @@
 #include "REncoder.hpp"
 
-REncoder::REncoder(Adafruit_MCP23X17 &expander, int pinA, int pinB, LatchMode mode):RotaryEncoder(pinA, pinB, mode), gpioExpander(expander) {
+// Constructor sets up the interrupt pin
+REncoder::REncoder(Adafruit_MCP23X17 &expander, int clkPin, int dataPin): gpioExpander(expander) {
     
-    expander.pinMode(pinA, INPUT_PULLUP);
-    expander.pinMode(pinB, INPUT_PULLUP);
-
+    gpioExpander.pinMode(dataPin, INPUT_PULLUP);
+    gpioExpander.pinMode(clkPin, INPUT_PULLUP);
+    gpioExpander.setupInterruptPin(clkPin);
+    currentPosition = 0;
 }
 
 
 
-// A method to get the turn movement of the rotary encoder within a 2ms interval.
+// A method to get the turn movement of the rotary encoder. 
+// Gets the states of the gpio at the time of the interrupt, then shifts by the data pin
+// Datapin is HIGH at falling edge of clk if turned clockwise
+// Datapin is LOW at falling edge of clk if turned counter
 // -1 = counterclockwise, 0 = no change, 1 = clockwise
-void IRAM_ATTR REncoder::tick() {
-    int sig1 = (GPIO.in >> _pin1) & 0x01;
-    int sig2 = (GPIO.in >> _pin2) & 0x01;
-    int8_t thisState = sig1 | (sig2 << 1);
+bool REncoder::tick() {
+    u_int16_t pinStates = gpioExpander.getCapturedInterrupt();
+    Serial.print("Pin states: ");
+    Serial.println(pinStates);
+    bool dataState = (pinStates>>dataPin) & 0x1;
+    if (dataState) {
+        currentPosition++;
+    }
+    else {
+        currentPosition--;
+    }
+    
 
-    if (_oldState != thisState) {
-        _position += KNOBDIR[thisState | (_oldState << 2)];
-        _oldState = thisState;
-
-        if ((_mode == LatchMode::FOUR3 && thisState == LATCH3) ||
-                (_mode == LatchMode::FOUR0 && thisState == LATCH0) ||
-                (_mode == LatchMode::TWO03 && (thisState == LATCH0 || thisState == LATCH3))) {
-                _positionExt = (_mode == LatchMode::TWO03) ? (_position >> 1) : (_position >> 2);
-                // Mark an update event for the main loop
-        }
-    } // if
 } // tick()
+
+void REncoder::resetPosition() {
+    currentPosition = 0;
+}
+
+int REncoder::getPosition() {
+    return currentPosition;
+}
 
 REncoder::~REncoder() {
 

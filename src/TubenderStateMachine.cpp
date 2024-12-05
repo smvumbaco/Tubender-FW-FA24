@@ -12,13 +12,24 @@ extern void IRAM_ATTR ISR_advancingLimit1();
 extern void IRAM_ATTR ISR_advancingLimit2();
 extern void IRAM_ATTR ISR_bendLimit1();
 extern void IRAM_ATTR ISR_bendLimit2();
+volatile bool clkInterrupt = false;
+
+// Rotary Encoder ISRs
+void IRAM_ATTR handleDialClkInterrupt() {
+    clkInterrupt = true;
+}
 
 void IRAM_ATTR buttonPressedInterrupt() {
     buttonPress = true;
 }
 
-TubenderStateMachine::TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2, TFT &tft) : gpioExpander1(expander1), gpioExpander2(expander2), tft_display(tft), mux1(gpioExpander1, BUTTON_PLEX_1, BUTTON_SEL_1A, BUTTON_SEL_1B, BUTTON_SEL_1C), mux2(gpioExpander1, BUTTON_PLEX_2, BUTTON_SEL_2A, BUTTON_SEL_2B, BUTTON_SEL_2C) {
-    
+TubenderStateMachine::TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2, TFT &tft, REncoder &rEncoder, SevenSegmentDisplay &sevenSegment) : gpioExpander1(expander1), gpioExpander2(expander2), 
+tft_display(tft), 
+mux1(gpioExpander1, BUTTON_PLEX_1, BUTTON_SEL_1A, BUTTON_SEL_1B, BUTTON_SEL_1C), 
+mux2(gpioExpander1, BUTTON_PLEX_2, BUTTON_SEL_2A, BUTTON_SEL_2B, BUTTON_SEL_2C), 
+encoder(rEncoder),
+sevenSeg(sevenSegment) {
+
 }
 
 TubenderStateMachine::~TubenderStateMachine() {
@@ -70,10 +81,8 @@ void TubenderStateMachine::initializePins() {
 
     //tests for rencoder
     gpioExpander1.setupInterrupts(false, false, LOW);
-    gpioExpander1.pinMode(DIAL_CHANNEL_A, INPUT_PULLUP);
-    gpioExpander1.setupInterruptPin(DIAL_CHANNEL_A, LOW);
-    gpioExpander1.pinMode(DIAL_CHANNEL_B, INPUT_PULLUP);
-    gpioExpander1.setupInterruptPin(DIAL_CHANNEL_B, LOW);
+    gpioExpander1.pinMode(DIAL_CLK, INPUT);
+    gpioExpander1.setupInterruptPin(DIAL_CLK, FALLING);
     Serial.println("Expander 1 Done");
     
     
@@ -123,14 +132,30 @@ void TubenderStateMachine::reset() {
 
 void TubenderStateMachine::start() {
     // after getting initial tube length
-    // double initialLength = 240.0;
-    // Config tubeConfig(initialLength);
-    // tubeConfig.addNewBend("offset", 0, 22.5, 10, 15);
-    // Serial.print(tubeConfig.tubeLength);
+    // Also, active lo button
     tft_display.displayStartMenu();
-    while (!mux1.readButton(0))
+    while (mux1.readButton(0)){
         ;
+    }
+
+    // tube length
+    tft_display.displayTubeInput();
+    while (mux1.readButton(0)) {
+        if (clkInterrupt) {
+            encoder.tick();
+        }
+        sevenSeg.displayTubeLength(encoder.getPosition());
+    }
+    configuration.tubeLength;
+    tft_display.displayAdvancementInput();
+
+    tft_display.displayBendSelect();
+
+    tft_display.displayVarInputMenu();
     
+    tft_display.displayAddOrRun();
+
+    tft_display.displayRunning();
 }
 
 void TubenderStateMachine::bend() {

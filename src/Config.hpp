@@ -22,6 +22,7 @@ class Config {
     public:
     
         Config(double initTubeLength);
+        Config();
         //TODO: Confirm max number of bends
         string bendType[30];
         double bendAngles[30];
