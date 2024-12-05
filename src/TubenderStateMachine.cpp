@@ -119,6 +119,23 @@ void TubenderStateMachine::initializePins() {
     
 }
 
+bool TubenderStateMachine::checkSensors() {
+    // Check each sensor's state
+    bool breakBeam1 = digitalRead(CHUCK_BEAM) == LOW; // Tube present before chuck
+    bool breakBeam2 = digitalRead(DIE_BEAM) == LOW;   // Tube present before die
+    bool proximity1 = digitalRead(INDUCTIVE_S_1) == LOW; // Metal detected
+    bool proximity2 = digitalRead(INDUCTIVE_S_2) == LOW; // Metal detected
+    bool limitSwitch1 = digitalRead(ADVANCE_LIMIT_1) == HIGH; // Limit switch not pressed
+    bool limitSwitch2 = digitalRead(ADVANCE_LIMIT_2) == HIGH; // Limit switch not pressed
+    bool bendSwitch1 = digitalRead(DIE_LIMIT_1) == HIGH;      // Limit switch in correct state
+    bool bendSwitch2 = digitalRead(DIE_LIMIT_2) == LOW;       // Limit switch in correct state
+
+    // Combine all checks
+    return (breakBeam1 && breakBeam2 && proximity1 && proximity2 &&
+            limitSwitch1 && limitSwitch2 && bendSwitch1 && !bendSwitch2);
+}
+
+
 void TubenderStateMachine::reset() {
 
 }

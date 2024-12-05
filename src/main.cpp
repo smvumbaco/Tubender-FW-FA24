@@ -9,10 +9,7 @@
 Adafruit_MCP23X17 expander1;
 Adafruit_MCP23X17 expander2;
 
-
-
-
-
+// Motor setup
 Pin advancingPul = {ADVANCING_PUL, false};
 Pin advancingDir = {ADVANCING_DIR, false};
 Pin advancingEnable = {ADVANCING_ENA, true};
@@ -32,6 +29,13 @@ Pin chuckClampPul = {CHUCK_CLAMP_PUL, true};
 Pin chuckClampDir = {CHUCK_CLAMP_DIR, false};
 Pin chuckClampEnable = {CHUCK_CLAMP_ENA, true};
 Motor chuckClamp(&expander2, chuckClampPul, chuckClampDir, chuckClampEnable, 100, "chuck clamp");
+
+
+
+// need sensor instances
+
+//  NEED TO INSTANTIATE PID OBJECT
+
 
 #define RA8875_CS  5   // Chip select pin
 #define RA8875_RST 12   // Reset pin
@@ -177,9 +181,19 @@ void loop() {
 
     if (sensorStateChanged) {
         sensorStateChanged = false;
-        Serial.println("Sensor state changed.");
+        if (stateMachine.checkSensors()) {
+            Serial.println("All sensors are valid. Proceeding...");
+        } else {
+            Serial.println("Safety check failed. Stopping operation.");
+            // Stop all motors for safety
+            advancing.stopMotor();
+            tubeRotation.stopMotor();
+            dieClamp.stopMotor();
+            chuckClamp.stopMotor();
+            // ADD STOP METHOD FOR BENDING ACTUATOR
+        }
     }
-    
+
     // Serial.println("advancing moving 20 steps");
     // advancing.moveForward(20);
 
