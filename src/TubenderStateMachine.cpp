@@ -148,14 +148,29 @@ void TubenderStateMachine::start() {
     }
     configuration.tubeLength;
     tft_display.displayAdvancementInput();
+    while (mux1.readButton(0)){
+        sevenSeg.displayAdvancement(encoder.getPosition());
+    }
 
     tft_display.displayBendSelect();
+    while (mux1.readButton(0)){
+        
+    }
 
     tft_display.displayVarInputMenu();
+    while (mux1.readButton(0)){
+        ;
+    }
     
     tft_display.displayAddOrRun();
+    while (mux1.readButton(0)){
+        ;
+    }
 
     tft_display.displayRunning();
+    while (mux1.readButton(0)){
+        ;
+    }
 }
 
 void TubenderStateMachine::bend() {
