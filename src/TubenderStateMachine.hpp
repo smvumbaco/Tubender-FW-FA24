@@ -92,12 +92,15 @@ class TubenderStateMachine {
         Adafruit_MCP23X17 &gpioExpander1;
         Adafruit_MCP23X17 &gpioExpander2;
         TFT &tft_display;
+        REncoder &encoder;
+        SevenSegmentDisplay &sevenSeg;
         Mux mux1;
         Mux mux2;
+        Config configuration;
     public:
 
         // Constructor
-        TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2, TFT &tft);
+        TubenderStateMachine(Adafruit_MCP23X17 &expander1, Adafruit_MCP23X17 &expander2, TFT &tft, REncoder &rEncoder, SevenSegmentDisplay &sevenSegment);
         //TubenderStateMachine(put expander parameter(s) in here);
 
         ~TubenderStateMachine();

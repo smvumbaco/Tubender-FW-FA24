@@ -3,16 +3,23 @@
 #include <Arduino.h>
 #include <Adafruit_MCP23X17.h>
 #include <RotaryEncoder.h>
-#define DIAL_CHANNEL_A 6
-#define DIAL_CHANNEL_B 7
+#define DIAL_CLK 6
+#define DIAL_DATA 7
 
-class REncoder : public RotaryEncoder {
+class REncoder {
     private: 
         Adafruit_MCP23X17 &gpioExpander;
+        int dataPin;
+        int clkPin;
+        volatile int8_t _oldState;
+        int currentPosition;
+
     public:
-        REncoder(Adafruit_MCP23X17 &expander, int pin1, int pin2, LatchMode mode);
-        virtual void IRAM_ATTR tick();
+        REncoder(Adafruit_MCP23X17 &expander, int dPin, int clockPin);
+        virtual bool tick();
         virtual ~REncoder();
+        void resetPosition();
+        int getPosition();
 };
 
 #endif

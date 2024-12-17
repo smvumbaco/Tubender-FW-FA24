@@ -3,6 +3,10 @@
 using namespace std;
 
 //constructor for config object includes initial tube length in inches
+Config::Config() { 
+    tubeLength = 0;
+    }
+
 Config::Config(double initTubeLength) 
 {
     tubeLength = initTubeLength;
