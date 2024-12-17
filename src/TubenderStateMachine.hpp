@@ -109,6 +109,8 @@ class TubenderStateMachine {
         
         void initializePins();
 
+        bool checkSensors();
+
         void reset();
 
         void start();

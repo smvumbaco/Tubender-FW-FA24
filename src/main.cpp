@@ -60,7 +60,7 @@ portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 //     interruptCounter++;
 //     portEXIT_CRITICAL_ISR(&timerMux);
 // }
-
+volatile bool dialChannelAInterrupt = false;
 volatile bool dialChannelBInterrupt = false;
 
 volatile bool sensorStateChanged = false;
@@ -68,7 +68,7 @@ volatile unsigned long lastInterruptTime = 0;
 
 
 // State machine
-TubenderStateMachine stateMachine(expander1, expander2, myTFT, encoder);
+TubenderStateMachine stateMachine(expander1, expander2, myTFT, encoder, sevenSegment);
 
 
 
